@@ -121,3 +121,23 @@ AOS.init({
     duration: 800, // Duração da animação em ms
     once: true     // Executa a animação apenas uma vez ao rolar
 });
+
+function criarGraficoBarras(canvasId, labels, data, colors) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 9 } }
+        }
+    });
+}
