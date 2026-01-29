@@ -74,7 +74,6 @@ header h1 { font-size: 2rem; color: var(--primary); text-transform: uppercase; f
 .header-tcc { background: #e3f2fd; color: var(--tcc-color); border-left: 6px solid var(--tcc-color); }
 .header-te { background: #f3e5f5; color: var(--te-color); border-left: 6px solid var(--te-color); }
 .header-diag { background: #e0f2f1; color: var(--diag-color); border-left: 6px solid var(--diag-color); }
-
 body.dark-mode .section-header { background: #333; filter: brightness(1.2); }
 
 /* Inputs e Chips */
@@ -139,12 +138,6 @@ input[type="text"], textarea {
 .option-label[data-val="2"]:hover, .option-label:has(input[value="2"]:checked) { background: #fffce0; color: #f39c12; }
 .option-label[data-val="4"]:hover, .option-label:has(input[value="4"]:checked) { background: #ffcccc; color: #c0392b; }
 
-Para elevar o nível profissional do seu sistema, vamos aplicar o conceito de UI consistente (Interface de Usuário) que extraímos da ASRS-18. O objetivo é que esses botões tenham estados visuais claros, animações suaves e se adaptem ao Modo Noturno e aos Temas (Roxo, Laranja, Azul) que estruturamos.
-
-Adicione estas regras ao seu arquivo assets/style.css:
-
-🎨 Estilização dos Botões de Ação
-CSS
 /* --- ESTILO BASE PARA TODOS OS BOTÕES DE AÇÃO --- */
 .btn-print, .btn-back, .btn-config-ia, .btn-magic {
     display: inline-flex;
