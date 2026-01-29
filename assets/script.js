@@ -34,3 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
         setupAutoSave();
     }
 });
+// 1. Alternar Chips (Usado em esquemas, sintomas, etc)
+function toggleChip(el) { 
+    el.classList.toggle('active'); 
+}
+
+// 2. Configuração Global da IA (Salva no navegador)
+function configureIA() {
+    const key = prompt("Insira sua Gemini API Key:");
+    if (key) {
+        localStorage.setItem('gemini_api_key', key.trim());
+        location.reload();
+    }
+}
+
+// 3. Função de Melhoria de Texto com IA (Universal)
+async function improveTextIA(elementId, promptType) {
+    const textarea = document.getElementById(elementId);
+    const apiKey = localStorage.getItem('gemini_api_key');
+    if (!apiKey) return alert("Configure a IA primeiro!");
+
+    const btn = textarea.nextElementSibling;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
