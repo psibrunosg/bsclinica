@@ -200,3 +200,44 @@ textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
     /* Remover placeholders na impressão */
     ::placeholder { color: transparent !important; }
 }
+
+/* --- Novas Variáveis Integrativas --- */
+:root {
+    --tcc-color: #0984e3; 
+    --te-color: #8e44ad;  
+    --diag-color: #00b894;
+}
+
+/* --- Chips Interativos (Esquemas) --- */
+.chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip {
+    padding: 8px 16px; border: 2px solid var(--card-border); border-radius: 20px;
+    font-size: 0.85rem; cursor: pointer; transition: var(--transition);
+    background: var(--card-bg); color: var(--text); font-weight: 600;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active { background: var(--te-color); color: white; border-color: var(--te-color); }
+
+/* --- Botão Mágico IA --- */
+.magic-input-wrapper { position: relative; }
+.btn-magic {
+    position: absolute; bottom: 8px; right: 8px;
+    background: var(--text); color: white; border: none;
+    width: 32px; height: 32px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: var(--transition); z-index: 5;
+}
+.btn-magic:hover { background: var(--primary); transform: scale(1.1); }
+
+/* --- Cabeçalhos de Seção Coloridos --- */
+.section-header {
+    padding: 15px 20px; border-radius: 12px;
+    margin: 30px 0 15px 0; display: flex; align-items: center; gap: 12px;
+    font-size: 1.1rem; font-weight: 800; text-transform: uppercase;
+}
+.header-tcc { background: #e3f2fd; color: var(--tcc-color); border-left: 6px solid var(--tcc-color); }
+.header-te { background: #f3e5f5; color: var(--te-color); border-left: 6px solid var(--te-color); }
+.header-diag { background: #e0f2f1; color: var(--diag-color); border-left: 6px solid var(--diag-color); }
+
+/* Ajuste para o Modo Noturno nos Cabeçalhos */
+body.dark-mode .section-header { background: #333; filter: brightness(1.2); }
