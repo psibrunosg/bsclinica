@@ -56,3 +56,4 @@ async function improveTextIA(elementId, promptType) {
 
     const btn = textarea.nextElementSibling;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+}
