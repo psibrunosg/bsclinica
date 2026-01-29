@@ -115,3 +115,9 @@ async function improveTextIA(elementId, contextType) {
 function toggleChip(el) {
     el.classList.toggle('active');
 }
+
+import 'https://unpkg.com/aos@2.3.1/dist/aos.js'; // Caso use módulos, ou apenas a tag <script>
+AOS.init({
+    duration: 800, // Duração da animação em ms
+    once: true     // Executa a animação apenas uma vez ao rolar
+});
