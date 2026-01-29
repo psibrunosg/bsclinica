@@ -141,3 +141,26 @@ function criarGraficoBarras(canvasId, labels, data, colors) {
         }
     });
 }
+
+// Inicializa Animações ao carregar qualquer página
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializa AOS se a biblioteca estiver presente
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    }
+
+    // Aplica o Modo Noturno salvo
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+});
+
+// Função para definir o tema da página
+function definirTema(nomeTema) {
+    document.body.classList.remove('tema-psicologia', 'tema-tdah', 'tema-tcc');
+    document.body.classList.add('tema-' + nomeTema);
+}
