@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Conceitualização Cognitiva | Bruno Gonçalves</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body id="form-conceitualizacao">
+
+    <header>
+        <h1>Conceitualização Cognitiva</h1>
+        <div class="subtitle">Terapia do Esquema - Bruno de Souza Gonçalves</div>
+    </header>
+
+    <main class="main-container">
+        <div class="group-container">
+            <div class="group-title">👤 Identificação</div>
+            <input type="text" id="paciente_nome" placeholder="Nome do Paciente" style="width: 100%;">
+        </div>
+
+        <div class="group-container">
+            <div class="group-title">📜 História Relevante</div>
+            <textarea id="historia_vida" rows="6" placeholder="Experiências precoces, temperamento..."></textarea>
+        </div>
+
+        <div class="group-container">
+            <div class="group-title">⚙️ Esquemas Inadaptativos</div>
+            <textarea id="esquemas_ativos" rows="4" placeholder="Quais esquemas foram identificados?"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-print" onclick="imprimirRelatorio()">🖨️ Imprimir</button>
+            <button class="btn-back" onclick="location.href='../index.html'">Voltar</button>
+        </div>
+    </main>
+
+    <script src="../assets/script.js"></script>
+</body>
+</html>
