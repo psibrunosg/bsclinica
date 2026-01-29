@@ -13,10 +13,6 @@
     --tcc-color: #0984e3; 
     --te-color: #8e44ad;  
     --diag-color: #00b894;
-    --tdah-primary: #e67e22;      /* Laranja TDAH */
-    --tdah-primary-dark: #d35400;
-    --tdah-accent: #f1c40f;
-    --tdah-bg: #f0f8ff;
 }
 
 body.dark-mode {
