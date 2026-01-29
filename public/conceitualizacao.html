@@ -2,37 +2,102 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Conceitualização Cognitiva | Bruno Gonçalves</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conceitualização Integrativa | Bruno Gonçalves</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body id="form-conceitualizacao">
 
     <header>
-        <h1>Conceitualização Cognitiva</h1>
-        <div class="subtitle">Terapia do Esquema - Bruno de Souza Gonçalves</div>
+        <h1>Conceitualização Integrativa</h1>
+        <div class="subtitle">Modelo Misto: TCC e Terapia do Esquema</div>
+        <button class="btn-print" onclick="imprimirRelatorio()">
+            <i class="fa-solid fa-print"></i> <span>Imprimir</span>
+        </button>
     </header>
 
-    <main class="main-container">
+    <div class="ai-config-float no-print" style="position: fixed; top: 20px; left: 20px; z-index: 100;">
+        <button class="btn-back" onclick="configureIA()" style="margin:0; background: white;">
+            <i class="fa-solid fa-robot"></i> Configurar IA
+        </button>
+    </div>
+
+    <div class="main-container">
+        
         <div class="group-container">
-            <div class="group-title">👤 Identificação</div>
-            <input type="text" id="paciente_nome" placeholder="Nome do Paciente" style="width: 100%;">
+            <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label class="group-title" style="font-size: 0.9rem;">Nome do Paciente:</label>
+                    <input type="text" id="pacienteNome" placeholder="Ex: Antônio Carlos...">
+                </div>
+                <div>
+                    <label class="group-title" style="font-size: 0.9rem;">Idade:</label>
+                    <input type="text" id="pacienteIdade" placeholder="Ex: 35 anos">
+                </div>
+            </div>
         </div>
 
+        <div class="section-header header-diag">
+            <i class="fa-solid fa-stethoscope"></i> I. Dados e Diagnóstico (Eixo I)
+        </div>
         <div class="group-container">
-            <div class="group-title">📜 História Relevante</div>
-            <textarea id="historia_vida" rows="6" placeholder="Experiências precoces, temperamento..."></textarea>
+            <label class="group-title" style="border:none;">Hipótese Diagnóstica (CID/DSM):</label>
+            <div class="magic-input-wrapper">
+                <textarea id="diagEixo1" placeholder="Ex: TAG, TDAH, Depressão..."></textarea>
+                <button class="btn-magic" onclick="improveTextIA('diagEixo1', 'DIAG')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
         </div>
 
+        <div class="section-header header-tcc">
+            <i class="fa-solid fa-brain"></i> II. Formulação Cognitiva (TCC)
+        </div>
         <div class="group-container">
-            <div class="group-title">⚙️ Esquemas Inadaptativos</div>
-            <textarea id="esquemas_ativos" rows="4" placeholder="Quais esquemas foram identificados?"></textarea>
+            <label class="group-title" style="border:none;">Crenças Centrais (Eu sou...):</label>
+            <div class="magic-input-wrapper">
+                <textarea id="crencasCentrais" placeholder="Ex: Eu sou inadequado, fracassado..."></textarea>
+                <button class="btn-magic" onclick="improveTextIA('crencasCentrais', 'TCC')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-print" onclick="imprimirRelatorio()">🖨️ Imprimir</button>
-            <button class="btn-back" onclick="location.href='../index.html'">Voltar</button>
+        <div class="section-header header-te">
+            <i class="fa-solid fa-puzzle-piece"></i> III. Formulação do Esquema (TE)
         </div>
-    </main>
+        <div class="group-container">
+            <label class="group-title" style="border:none;">Esquemas (EPDs) Ativos:</label>
+            <div class="chip-container">
+                <div class="chip" onclick="toggleChip(this)">Abandono</div>
+                <div class="chip" onclick="toggleChip(this)">Desconfiança</div>
+                <div class="chip" onclick="toggleChip(this)">Privação Emocional</div>
+                <div class="chip" onclick="toggleChip(this)">Defectividade</div>
+                <div class="chip" onclick="toggleChip(this)">Fracasso</div>
+                <div class="chip" onclick="toggleChip(this)">Subjugação</div>
+                <div class="chip" onclick="toggleChip(this)">Padrões Inflexíveis</div>
+            </div>
+            <div class="magic-input-wrapper" style="margin-top:20px;">
+                <textarea id="esquemasDesc" placeholder="História de vida e origem dos esquemas..."></textarea>
+                <button class="btn-magic" onclick="improveTextIA('esquemasDesc', 'TE')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
+        </div>
+
+        <div class="section-header" style="background: #f0f0f0; color: #636e72; border-left: 6px solid #636e72;">
+            <i class="fa-solid fa-rotate"></i> IV. Ciclo de Manutenção e Plano
+        </div>
+        <div class="group-container">
+            <div class="magic-input-wrapper">
+                <textarea id="plano" rows="5" placeholder="Plano terapêutico integrado (TCC + TE)..."></textarea>
+                <button class="btn-magic" onclick="improveTextIA('plano', 'PLANO')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="../index.html" class="btn-back"><span>&larr;</span> Sair e Voltar</a>
+        </div>
+
+    </div>
 
     <script src="../assets/script.js"></script>
 </body>
