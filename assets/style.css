@@ -139,6 +139,103 @@ input[type="text"], textarea {
 .option-label[data-val="2"]:hover, .option-label:has(input[value="2"]:checked) { background: #fffce0; color: #f39c12; }
 .option-label[data-val="4"]:hover, .option-label:has(input[value="4"]:checked) { background: #ffcccc; color: #c0392b; }
 
+Para elevar o nível profissional do seu sistema, vamos aplicar o conceito de UI consistente (Interface de Usuário) que extraímos da ASRS-18. O objetivo é que esses botões tenham estados visuais claros, animações suaves e se adaptem ao Modo Noturno e aos Temas (Roxo, Laranja, Azul) que estruturamos.
+
+Adicione estas regras ao seu arquivo assets/style.css:
+
+🎨 Estilização dos Botões de Ação
+CSS
+/* --- ESTILO BASE PARA TODOS OS BOTÕES DE AÇÃO --- */
+.btn-print, .btn-back, .btn-config-ia, .btn-magic {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 50px; /* Estilo arredondado da ASRS-18 */
+    font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+}
+
+/* --- BOTÃO VOLTAR (Estilo Outline / Secundário) --- */
+.btn-back {
+    background: transparent;
+    border-color: var(--card-border);
+    color: #636e72;
+    padding: 10px 25px;
+    font-size: 0.9rem;
+}
+
+.btn-back:hover {
+    background: var(--bg-color);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateX(-5px); /* Efeito de "retorno" */
+}
+
+/* --- BOTÃO IMPRIMIR (Estilo de Destaque) --- */
+.btn-print {
+    background: var(--primary);
+    color: white;
+    padding: 12px 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.btn-print:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.btn-print i { font-size: 1.1rem; }
+
+/* --- BOTÃO DE CONFIGURAÇÃO DA IA (Flutuante) --- */
+.btn-config-ia {
+    background: #2d3436;
+    color: white;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-config-ia:hover {
+    background: var(--primary);
+    transform: scale(1.05);
+}
+
+/* --- BOTÃO MÁGICO (Dentro dos Textareas) --- */
+.btn-magic {
+    background: var(--text);
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.btn-magic:hover {
+    opacity: 1;
+    background: var(--primary);
+    transform: rotate(15deg) scale(1.1); /* Animação de "faísca" */
+}
+
+/* --- ADAPTAÇÃO PARA MODO NOTURNO --- */
+body.dark-mode .btn-back {
+    border-color: #444;
+    color: #b2bec3;
+}
+
+body.dark-mode .btn-back:hover {
+    background: #2d2d2d;
+    color: white;
+}
+
+body.dark-mode .btn-print {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
 /* ==========================================================================
    3. ESTILOS DE IMPRESSÃO (CORREÇÃO TOTAL)
    ========================================================================== */
