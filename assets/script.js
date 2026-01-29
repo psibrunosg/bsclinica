@@ -49,11 +49,69 @@ function configureIA() {
 }
 
 // 3. Função de Melhoria de Texto com IA (Universal)
-async function improveTextIA(elementId, promptType) {
+async function improveTextIA(elementId, contextType) {
     const textarea = document.getElementById(elementId);
+    const originalText = textarea.value;
     const apiKey = localStorage.getItem('gemini_api_key');
-    if (!apiKey) return alert("Configure a IA primeiro!");
+    const btn = textarea.nextElementSibling; // O botão mágico que vem logo após o textarea
+    
+    // Captura dados do paciente para dar contexto à IA (se existirem na página)
+    const nome = document.getElementById('pacienteNome')?.value || "o paciente";
+    const idade = document.getElementById('pacienteIdade')?.value || "";
 
-    const btn = textarea.nextElementSibling;
+    if (!originalText) { alert("Escreva um rascunho primeiro!"); return; }
+    if (!apiKey) { 
+        alert("Configure a IA primeiro!"); 
+        const key = prompt("Insira sua Gemini API Key:");
+        if(key) localStorage.setItem('gemini_api_key', key.trim());
+        return; 
+    }
+
+    // Feedback visual de carregamento
+    const originalIcon = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+
+    // Define as instruções baseadas no contexto passado
+    let instructions = "Refine o texto tecnicamente.";
+    if (contextType === 'DIAG') instructions = "Refine a descrição clínica do diagnóstico e sintomas, usando terminologia DSM-5.";
+    if (contextType === 'TCC') instructions = "Aprimore a formulação cognitiva (Crenças Centrais/Intermediárias) seguindo o modelo de Judith Beck.";
+    if (contextType === 'TE') instructions = "Descreva os Esquemas e Modos usando a terminologia de Jeffrey Young (Terapia do Esquema).";
+    if (contextType === 'CICLO') instructions = "Explique como os sintomas e os Esquemas se retroalimentam em um ciclo de manutenção.";
+    if (contextType === 'PLANO') instructions = "Organize um plano terapêutico integrativo combinando TCC e Terapia do Esquema.";
+
+    const prompt = `
+        Atue como um Supervisor Clínico Sênior (Especialista em TCC e Terapia do Esquema).
+        Paciente: ${nome} ${idade ? '('+idade+')' : ''}.
+        Tarefa: ${instructions}
+        Texto Rascunho do Terapeuta: "${originalText}"
+        Retorne apenas o texto melhorado e expandido tecnicamente, sem comentários extras.
+    `;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) throw new Error(data.error.message);
+        
+        // Insere o texto da IA de volta no textarea
+        textarea.value = data.candidates[0].content.parts[0].text.trim();
+
+    } catch (error) {
+        console.error(error);
+        alert("Erro na IA: " + error.message);
+    } finally {
+        btn.innerHTML = originalIcon;
+        btn.disabled = false;
+    }
+}
+
+// --- FUNÇÃO PARA OS CHIPS ---
+function toggleChip(el) {
+    el.classList.toggle('active');
 }
