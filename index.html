@@ -1,25 +1,74 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Psicologia | Bruno Gonçalves</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BS Psicologia Clínica</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Painel do Psicólogo</h1>
-        <div class="subtitle">Bruno de Souza Gonçalves - CRP 07/44472</div>
-    </header>
 
-    <div class="main-container">
-        <div class="group-container" style="cursor: pointer;" onclick="location.href='public/conceitualizacao.html'">
-            <div class="group-title">📝 Nova Conceitualização</div>
-            <p>Iniciar estruturação de caso clínico com Terapia do Esquema.</p>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <img src="logo.png" alt="BS Psicologia Logo" class="login-logo">
+            
+            <h2 style="margin-bottom: 0.5rem;">Bem-vindo(a)</h2>
+            <p style="margin-bottom: 2rem; font-size: 0.9rem;">Área restrita para pacientes e profissionais.</p>
+
+            <form id="loginForm">
+                <div style="text-align: left; margin-bottom: 1rem;">
+                    <label for="email" style="font-size: 0.9rem; font-weight: 600; color: var(--color-primary);">E-mail</label>
+                    <div style="position: relative;">
+                        <input type="email" id="email" placeholder="seu@email.com" required>
+                    </div>
+                </div>
+
+                <div style="text-align: left; margin-bottom: 1.5rem;">
+                    <label for="password" style="font-size: 0.9rem; font-weight: 600; color: var(--color-primary);">Senha</label>
+                    <input type="password" id="password" placeholder="Sua senha segura" required>
+                    <div style="text-align: right; margin-top: -0.5rem;">
+                        <a href="#" style="font-size: 0.8rem; color: var(--color-text-light); text-decoration: none;">Esqueceu a senha?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Entrar na Plataforma</button>
+            </form>
+
+            <div class="login-footer">
+                <p>BS Psicologia Clínica &copy; 2026</p>
+                <p style="font-size: 0.75rem; margin-top: 5px;">CRP 07/44472 | CNPJ 62.157.380/0001-20</p>
+            </div>
         </div>
-
-        <button class="btn-print" onclick="toggleDarkMode()">🌙 Alternar Tema</button>
     </div>
 
-    <script src="assets/script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Impede recarregar a página
+            
+            const email = document.getElementById('email').value;
+            
+            // Simulação simples de roteamento baseado na hierarquia
+            // Isso será substituído pelo Firebase Auth depois
+            let userRole = "";
+
+            if(email.includes("lider")) {
+                userRole = "Líder";
+                alert(`Login simulado como: ${userRole}\nVocê teria acesso total (Cadastrar Psicólogos e Recepcionistas).`);
+                // window.location.href = "dashboard-lider.html";
+            } else if (email.includes("psi")) {
+                userRole = "Psicólogo";
+                alert(`Login simulado como: ${userRole}\nVocê teria acesso aos seus Pacientes e Tarefas.`);
+                // window.location.href = "dashboard-psi.html";
+            } else if (email.includes("recep")) {
+                userRole = "Recepcionista";
+                alert(`Login simulado como: ${userRole}\nVocê poderia cadastrar Pacientes.`);
+            } else {
+                userRole = "Paciente";
+                alert(`Login simulado como: ${userRole}\nVocê veria suas tarefas de TCC.`);
+                // window.location.href = "dashboard-paciente.html";
+            }
+        });
+    </script>
 </body>
 </html>
