@@ -216,3 +216,124 @@ input:focus {
 .hidden {
     display: none; /* Classe utilitária para esconder campos */
 }
+/* --- DASHBOARD LAYOUT --- */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+/* Sidebar (Menu Lateral) */
+.sidebar {
+    width: 260px;
+    background-color: var(--color-primary);
+    color: white;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-item {
+    padding: 15px 20px;
+    margin-bottom: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.8;
+}
+
+.nav-item:hover, .nav-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+/* Área de Conteúdo Principal */
+.main-content {
+    margin-left: 260px; /* Mesma largura da sidebar */
+    padding: 2rem;
+    width: 100%;
+    position: relative;
+}
+
+/* --- SEÇÕES DINÂMICAS COM ANIMAÇÃO --- */
+.content-section {
+    display: none; /* Escondido por padrão */
+    animation: fadeSlideUp 0.5s ease forwards;
+}
+
+.content-section.active {
+    display: block; /* Mostra quando ativo */
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CARDS DE SALAS E STATUS --- */
+.status-badge {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.status-online { background-color: var(--color-success); box-shadow: 0 0 5px var(--color-success); }
+.status-busy { background-color: #e74c3c; } /* Vermelho */
+.status-offline { background-color: #95a5a6; }
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.room-card {
+    background: white;
+    padding: 20px;
+    border-radius: var(--border-radius-sm);
+    border-top: 4px solid var(--color-secondary);
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+}
+
+.room-card.occupied {
+    border-color: #e74c3c;
+    background-color: #fff5f5;
+}
+
+/* Tabelas Bonitas */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+}
+.data-table th, .data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+.data-table th {
+    background-color: var(--color-primary);
+    color: white;
+}
