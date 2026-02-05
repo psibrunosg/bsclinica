@@ -35,7 +35,9 @@ window.mostrarSecao = function(idSecao, elementoMenu) {
     
     const secao = document.getElementById(idSecao);
     if(secao) secao.classList.add('active');
-    
+    if (idSecao === 'sec-agenda' && calendar) {
+        setTimeout(() => { calendar.render(); }, 200); // Força redesenhar
+    }
     if(elementoMenu) elementoMenu.classList.add('active');
 }
 
@@ -85,7 +87,6 @@ function carregarEquipe() {
                 `;
                 listaPsi.innerHTML += row;
             });
-            
             // Atualiza contador do topo
             const countPsi = document.getElementById('count-psi');
             if(countPsi) countPsi.innerText = snapshot.size;
