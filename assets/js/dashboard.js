@@ -370,6 +370,189 @@ if(formEditar) {
         }
     });
 }
+// --- AGENDA & FULLCALENDAR ---
+
+let calendar; // Variável global para o calendário
+
+function inicializarAgenda() {
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) return;
+
+    // 1. Configuração do FullCalendar
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth', // Começa vendo o Mês
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'pt-br', // Tradução
+        editable: true,  // Permite arrastar (futuro)
+        selectable: true, // Permite clicar na data vazia
+        
+        // Clicar em dia vazio -> Novo Agendamento
+        dateClick: function(info) {
+            abrirModalAgenda(null, info.dateStr);
+        },
+
+        // Clicar em evento existente -> Editar/Excluir
+        eventClick: function(info) {
+            abrirModalAgenda(info.event);
+        },
+
+        // Carregar eventos do Firestore
+        events: async function(info, successCallback, failureCallback) {
+            try {
+                // Busca agendamentos no banco
+                const q = query(collection(db, "agendamentos"));
+                
+                // Realtime Listener
+                onSnapshot(q, (snapshot) => {
+                    const eventos = snapshot.docs.map(doc => {
+                        const data = doc.data();
+                        return {
+                            id: doc.id,
+                            title: `${data.paciente} (${data.psiNome})`, // O que aparece no bloco
+                            start: `${data.data}T${data.hora}`, // Formato ISO
+                            backgroundColor: definirCorPorTipo(data.tipo),
+                            extendedProps: { ...data } // Guarda dados extras
+                        };
+                    });
+                    successCallback(eventos);
+                });
+            } catch (error) {
+                console.error("Erro agenda:", error);
+                failureCallback(error);
+            }
+        }
+    });
+
+    calendar.render();
+    
+    // Carrega a lista de Psis para o select do modal
+    carregarSelectPsis();
+}
+
+// Helper: Cor do evento baseada no tipo
+function definirCorPorTipo(tipo) {
+    if (tipo === 'Avaliação') return '#f39c12'; // Laranja
+    if (tipo === 'Online') return '#9b59b6';    // Roxo
+    return '#1F4E5F';                           // Azul Padrão
+}
+
+// --- FUNÇÕES DO MODAL DA AGENDA ---
+
+// 1. Abrir Modal (Para Criar ou Editar)
+window.abrirModalAgenda = function(evento, dataClicada) {
+    const modal = document.getElementById('modal-agenda');
+    const form = document.getElementById('form-agenda');
+    const btnExcluir = document.getElementById('btn-excluir-evento');
+    
+    form.reset();
+    modal.style.display = 'flex';
+
+    if (evento) {
+        // MODO EDIÇÃO
+        const props = evento.extendedProps;
+        document.getElementById('event-id').value = evento.id;
+        document.getElementById('evt-data').value = props.data;
+        document.getElementById('evt-hora').value = props.hora;
+        document.getElementById('evt-psi').value = props.psiId;
+        document.getElementById('evt-paciente').value = props.paciente;
+        document.getElementById('evt-tipo').value = props.tipo;
+        
+        btnExcluir.style.display = 'block'; // Mostra lixeira
+    } else {
+        // MODO NOVO
+        document.getElementById('event-id').value = "";
+        document.getElementById('evt-data').value = dataClicada || new Date().toISOString().split('T')[0];
+        document.getElementById('evt-hora').value = "08:00";
+        btnExcluir.style.display = 'none'; // Esconde lixeira
+    }
+}
+
+window.fecharModalAgenda = function() {
+    document.getElementById('modal-agenda').style.display = 'none';
+}
+
+// 2. Preencher Select de Psicólogos
+async function carregarSelectPsis() {
+    const select = document.getElementById('evt-psi');
+    const q = query(collection(db, "users"), where("role", "==", "psi"));
+    
+    const snapshot = await getDoc(doc(db, "dummy", "test")); // Dummy call ou use getDocs se importado
+    // Melhor usar onSnapshot para manter atualizado sempre
+    onSnapshot(q, (snap) => {
+        select.innerHTML = '<option value="">Selecione o Profissional...</option>';
+        snap.forEach(doc => {
+            const psi = doc.data();
+            const option = document.createElement('option');
+            option.value = psi.uid;
+            option.textContent = psi.nome;
+            select.appendChild(option);
+        });
+    });
+}
+
+// 3. Salvar Agendamento
+document.getElementById('form-agenda').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = "Salvando...";
+
+    const id = document.getElementById('event-id').value;
+    const psiSelect = document.getElementById('evt-psi');
+    
+    const dados = {
+        data: document.getElementById('evt-data').value,
+        hora: document.getElementById('evt-hora').value,
+        psiId: psiSelect.value,
+        psiNome: psiSelect.options[psiSelect.selectedIndex].text,
+        paciente: document.getElementById('evt-paciente').value,
+        tipo: document.getElementById('evt-tipo').value
+    };
+
+    try {
+        if (id) {
+            // Atualizar Existente
+            await updateDoc(doc(db, "agendamentos", id), dados);
+        } else {
+            // Criar Novo (Usando addDoc para ID automático)
+            // Precisamos importar addDoc lá em cima se não tiver
+            // Como usamos setDoc antes, vamos usar uma referência de doc aleatória
+            const novoRef = doc(collection(db, "agendamentos")); 
+            await setDoc(novoRef, dados);
+        }
+        
+        fecharModalAgenda();
+        calendar.refetchEvents(); // Atualiza visual
+        alert("Agendamento salvo!");
+        
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao salvar: " + error.message);
+    } finally {
+        btn.innerText = "Salvar Agendamento";
+    }
+});
+
+// 4. Excluir Agendamento
+window.excluirAgendamento = async function() {
+    const id = document.getElementById('event-id').value;
+    if (confirm("Cancelar este agendamento?")) {
+        await deleteDoc(doc(db, "agendamentos", id));
+        fecharModalAgenda();
+        calendar.refetchEvents();
+    }
+}
+
+// IMPORTANTE: Adicione inicializarAgenda() no DOMContentLoaded existente
+document.addEventListener("DOMContentLoaded", () => {
+    // ... suas outras inits ...
+    inicializarAgenda();
+    // O JS vai chiar se a aba estiver oculta (display:none), então
+    // temos um truque: quando clicar na aba Agenda, forçamos o calendar.render()
+});
 // Start
 document.addEventListener("DOMContentLoaded", () => {
     carregarEquipe();
