@@ -42,31 +42,43 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Impede recarregar a página
+   <script type="module">
+        // Importa o auth do arquivo que acabamos de criar
+        import { auth } from './assets/firebase.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
             const email = document.getElementById('email').value;
-            
-            // Simulação simples de roteamento baseado na hierarquia
-            // Isso será substituído pelo Firebase Auth depois
-            let userRole = "";
+            const password = document.getElementById('password').value;
+            const btn = document.querySelector('button[type="submit"]');
 
-            if(email.includes("lider")) {
-                userRole = "Líder";
-                alert(`Login simulado como: ${userRole}\nVocê teria acesso total (Cadastrar Psicólogos e Recepcionistas).`);
-                // window.location.href = "dashboard-lider.html";
-            } else if (email.includes("psi")) {
-                userRole = "Psicólogo";
-                alert(`Login simulado como: ${userRole}\nVocê teria acesso aos seus Pacientes e Tarefas.`);
-                // window.location.href = "dashboard-psi.html";
-            } else if (email.includes("recep")) {
-                userRole = "Recepcionista";
-                alert(`Login simulado como: ${userRole}\nVocê poderia cadastrar Pacientes.`);
-            } else {
-                userRole = "Paciente";
-                alert(`Login simulado como: ${userRole}\nVocê veria suas tarefas de TCC.`);
-                // window.location.href = "dashboard-paciente.html";
+            try {
+                // Feedback visual de carregamento
+                btn.textContent = "Entrando...";
+                btn.disabled = true;
+
+                // Tenta fazer o login real no Firebase
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                console.log("Login sucesso:", user.uid);
+                alert("Login realizado com sucesso! (Conectado ao Firebase)");
+                
+                // AQUI: Futuramente vamos redirecionar baseada na role do usuário
+                // window.location.href = "/dashboard.html";
+
+            } catch (error) {
+                console.error(error);
+                let msg = "Erro ao entrar.";
+                if (error.code === 'auth/invalid-credential') msg = "E-mail ou senha incorretos.";
+                if (error.code === 'auth/too-many-requests') msg = "Muitas tentativas. Tente mais tarde.";
+                
+                alert(msg);
+            } finally {
+                btn.textContent = "Entrar na Plataforma";
+                btn.disabled = false;
             }
         });
     </script>
