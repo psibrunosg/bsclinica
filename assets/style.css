@@ -333,6 +333,13 @@ input:focus {
     text-align: left;
     border-bottom: 1px solid #eee;
 }
+/* Adicione no final do assets/style.css */
+.sidebar-logo img {
+    background-color: white; /* Cria um fundo branco atrás do logo */
+    border-radius: 50%;      /* Deixa redondo */
+    padding: 10px;           /* Espaço entre a borda e o desenho */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
 .data-table th {
     background-color: var(--color-primary);
     color: white;
