@@ -1,282 +1,184 @@
-/* ==========================================================================
-   1. VARIÁVEIS E TEMAS
-   ========================================================================== */
+/* =========================================
+   BS Psicologia Clínica - Design System
+   Tema: Acolhedor, Didático e Profissional
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap');
+
 :root {
-    --primary: #9b59b2;
-    --primary-light: #f4ecf7;
-    --bg-color: #f8f9fa;
-    --text: #2d3436;
-    --card-bg: #ffffff;
-    --card-border: #dfe6e9;
-    --option-bg: #ffffff;
-    --transition: all 0.3s ease;
-    --tcc-color: #0984e3; 
-    --te-color: #8e44ad;  
-    --diag-color: #00b894;
+    /* --- Paleta de Cores (Extraída da Identidade Visual) --- */
+    --color-primary: #1F4E5F;      /* Azul Petróleo Escuro - Base da Marca */
+    --color-secondary: #7BCBCB;    /* Verde Água - Detalhes e Acolhimento */
+    --color-accent: #E0F2F1;       /* Fundo de destaque muito suave */
+    
+    /* --- Cores Funcionais --- */
+    --color-text-main: #2C3E50;    /* Cinza Escuro para leitura (não preto puro) */
+    --color-text-light: #546E7A;   /* Texto secundário */
+    --color-white: #FFFFFF;
+    --color-success: #27AE60;      /* Para tarefas concluídas */
+    --color-warning: #F39C12;      /* Para tarefas pendentes */
+    --color-bg-body: #F4F7F6;      /* Fundo da página (Off-white calmante) */
+
+    /* --- Tipografia --- */
+    --font-heading: 'Nunito', sans-serif;  /* Arredondada e amigável */
+    --font-body: 'Open Sans', sans-serif;  /* Foco em legibilidade */
+
+    /* --- Formas e Sombras (UI Acolhedora) --- */
+    --border-radius-sm: 8px;
+    --border-radius-lg: 20px;      /* Cantos bem arredondados */
+    --shadow-soft: 0 4px 6px -1px rgba(31, 78, 95, 0.1), 0 2px 4px -1px rgba(31, 78, 95, 0.06);
+    --shadow-hover: 0 10px 15px -3px rgba(31, 78, 95, 0.15);
 }
 
-body.dark-mode {
-    --bg-color: #1a1a1a;
-    --text: #f5f5f5;
-    --card-bg: #2d2d2d;
-    --card-border: #444;
-    --option-bg: #333;
-    --primary-light: #3b2647;
+/* --- Reset Básico --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* ==========================================================================
-   2. ESTILOS DE TELA (LAYOUT BASE)
-   ========================================================================== */
 body {
-    font-family: 'Quicksand', sans-serif;
-    background-color: var(--bg-color);
-    background-image: radial-gradient(#dfe6e9 2px, transparent 2px);
-    background-size: 20px 20px;
-    margin: 0; padding: 20px;
-    min-height: 100vh;
-    color: var(--text);
-    display: flex; flex-direction: column; align-items: center;
+    font-family: --font-body;
+    background-color: var(--color-bg-body);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    font-size: 16px;
 }
 
-body.dark-mode { background-image: radial-gradient(#333 2px, transparent 2px); }
-
-header {
-    text-align: center;
-    margin: 20px auto 40px auto;
-    background: var(--card-bg);
-    padding: 30px 20px;
-    border-radius: 25px;
-    border: 3px dashed var(--primary);
-    box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
-    position: relative;
-    max-width: 800px; width: 100%;
+/* --- Tipografia --- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    font-weight: 700;
 }
 
-header h1 { font-size: 2rem; color: var(--primary); text-transform: uppercase; font-weight: 800; margin: 0; }
-.subtitle { margin-top: 5px; color: #636e72; font-weight: 600; }
-
-.main-container { max-width: 800px; width: 100%; margin-bottom: 80px; }
-
-/* Cards e Seções */
-.group-container {
-    background: var(--card-bg);
-    border: 2px dashed var(--card-border);
-    border-radius: 20px; padding: 25px; margin-bottom: 25px;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.05);
-    transition: var(--transition);
+p {
+    margin-bottom: 1rem;
+    color: var(--color-text-light);
 }
 
-.section-header {
-    padding: 15px 20px; border-radius: 12px;
-    margin: 30px 0 15px 0; display: flex; align-items: center; gap: 12px;
-    font-size: 1.1rem; font-weight: 800; text-transform: uppercase;
-}
-.header-tcc { background: #e3f2fd; color: var(--tcc-color); border-left: 6px solid var(--tcc-color); }
-.header-te { background: #f3e5f5; color: var(--te-color); border-left: 6px solid var(--te-color); }
-.header-diag { background: #e0f2f1; color: var(--diag-color); border-left: 6px solid var(--diag-color); }
-body.dark-mode .section-header { background: #333; filter: brightness(1.2); }
+/* --- Componentes de UI --- */
 
-/* Inputs e Chips */
-input[type="text"], textarea {
-    width: 100%; padding: 15px; margin-top: 10px;
-    border: 2px solid var(--card-border); border-radius: 12px;
-    background-color: var(--option-bg); color: var(--text);
-    font-family: inherit; font-size: 1rem; box-sizing: border-box; outline: none; transition: var(--transition);
+/* Botão Principal (Acolhedor e Chamativo) */
+.btn-primary {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 12px 24px;
+    border-radius: var(--border-radius-lg); /* Botão arredondado */
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
 }
 
-.chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-.chip {
-    padding: 8px 16px; border: 2px solid var(--card-border); border-radius: 20px;
-    font-size: 0.85rem; cursor: pointer; transition: var(--transition);
-    background: var(--card-bg); color: var(--text); font-weight: 600;
+.btn-primary:hover {
+    background-color: #163a4a; /* Um pouco mais escuro */
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
 }
-.chip.active { background: var(--te-color); color: white; border-color: var(--te-color); }
 
-/* IA e Botões */
-.magic-input-wrapper { position: relative; }
-.btn-magic {
-    position: absolute; bottom: 8px; right: 8px;
-    background: var(--text); color: white; border: none;
-    width: 32px; height: 32px; border-radius: 50%;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5;
-}
-.question-card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+/* Botão Secundário (Para ações menos urgentes) */
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 10px 22px;
+    border-radius: var(--border-radius-lg);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.question-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+.btn-secondary:hover {
+    background-color: var(--color-accent);
 }
 
-/* Opções de Resposta Progressivas (Verde ao Vermelho) */
-.options-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
+/* Cards (Para as Tarefas de TCC e Perfis) */
+.card {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-sm);
+    padding: 2rem;
+    box-shadow: var(--shadow-soft);
+    border-left: 5px solid var(--color-secondary); /* Detalhe visual da marca */
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
 }
 
-.option-label {
-    background: var(--option-bg);
-    padding: 12px 5px;
-    text-align: center;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    border: 2px solid transparent;
+.card:hover {
+    transform: translateY(-3px); /* Efeito tátil suave */
 }
 
-/* Escala de Cores baseada em risco */
-.option-label[data-val="0"]:hover, .option-label:has(input[value="0"]:checked) { background: #dff9fb; color: #6ab04c; }
-.option-label[data-val="2"]:hover, .option-label:has(input[value="2"]:checked) { background: #fffce0; color: #f39c12; }
-.option-label[data-val="4"]:hover, .option-label:has(input[value="4"]:checked) { background: #ffcccc; color: #c0392b; }
+/* Inputs de Formulário (Login e Cadastros) */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-body);
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+    background-color: #fafafa;
+}
 
-/* --- ESTILO BASE PARA TODOS OS BOTÕES DE AÇÃO --- */
-.btn-print, .btn-back, .btn-config-ia, .btn-magic {
-    display: inline-flex;
+input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    background-color: #fff;
+}
+
+/* --- Layout Utilitários --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.text-center { text-align: center; }
+.mt-2 { margin-top: 2rem; }
+
+/* --- Estilos Específicos da Tela de Login --- */
+
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    border-radius: 50px; /* Estilo arredondado da ASRS-18 */
-    font-weight: 700;
-    font-family: 'Quicksand', sans-serif;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--color-bg-body) 0%, #e0f2f1 100%); /* Gradiente suave */
 }
 
-/* --- BOTÃO VOLTAR (Estilo Outline / Secundário) --- */
-.btn-back {
-    background: transparent;
-    border-color: var(--card-border);
-    color: #636e72;
-    padding: 10px 25px;
+.login-card {
+    background-color: var(--color-white);
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 10px 25px rgba(31, 78, 95, 0.1); /* Sombra mais profunda para destaque */
+    text-align: center;
+}
+
+.login-logo {
+    max-width: 150px;
+    margin-bottom: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-footer {
+    margin-top: 2rem;
     font-size: 0.9rem;
+    color: var(--color-text-light);
 }
 
-.btn-back:hover {
-    background: var(--bg-color);
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: translateX(-5px); /* Efeito de "retorno" */
-}
-
-/* --- BOTÃO IMPRIMIR (Estilo de Destaque) --- */
-.btn-print {
-    background: var(--primary);
-    color: white;
-    padding: 12px 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: none;
-}
-
-.btn-print:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
-
-.btn-print i { font-size: 1.1rem; }
-
-/* --- BOTÃO DE CONFIGURAÇÃO DA IA (Flutuante) --- */
-.btn-config-ia {
-    background: #2d3436;
-    color: white;
-    padding: 8px 18px;
-    font-size: 0.8rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.btn-config-ia:hover {
-    background: var(--primary);
-    transform: scale(1.05);
-}
-
-/* --- BOTÃO MÁGICO (Dentro dos Textareas) --- */
-.btn-magic {
-    background: var(--text);
-    color: white;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    opacity: 0.8;
-}
-
-.btn-magic:hover {
-    opacity: 1;
-    background: var(--primary);
-    transform: rotate(15deg) scale(1.1); /* Animação de "faísca" */
-}
-
-/* --- ADAPTAÇÃO PARA MODO NOTURNO --- */
-body.dark-mode .btn-back {
-    border-color: #444;
-    color: #b2bec3;
-}
-
-body.dark-mode .btn-back:hover {
-    background: #2d2d2d;
-    color: white;
-}
-
-body.dark-mode .btn-print {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-}
-/* ==========================================================================
-   3. ESTILOS DE IMPRESSÃO (CORREÇÃO TOTAL)
-   ========================================================================== */
-@media print {
-    @page { margin: 1.5cm; }
-
-    body { background: white !important; background-image: none !important; color: black !important; display: block !important; }
-
-    /* Esconder elementos desnecessários */
-    .btn-print, .btn-back, .btn-magic, .ai-config-float, .no-print, header::before { 
-        display: none !important; 
-    }
-
-    header {
-        border: none !important; border-bottom: 2px solid black !important;
-        background: transparent !important; border-radius: 0 !important;
-        margin-bottom: 30px !important; padding: 0 0 10px 0 !important;
-    }
-
-    header h1 { color: black !important; font-size: 20pt !important; }
-
-    /* Estilo Sóbrio para Seções Coloridas no Papel */
-    .section-header {
-        background: #f9f9f9 !important;
-        border: none !important;
-        border-left: 10px solid black !important;
-        color: black !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        margin-top: 25px !important;
-    }
-    .header-tcc { border-left-color: var(--tcc-color) !important; }
-    .header-te { border-left-color: var(--te-color) !important; }
-    .header-diag { border-left-color: var(--diag-color) !important; }
-
-    .group-container {
-        border: none !important; border-left: 2px solid #eee !important;
-        background: transparent !important; box-shadow: none !important;
-        padding: 10px 0 10px 15px !important; page-break-inside: avoid;
-    }
-
-    /* Campos de texto viram linhas de escrita */
-    input[type="text"], textarea {
-        border: none !important; border-bottom: 1px solid #ccc !important;
-        background: transparent !important; color: black !important;
-        padding: 5px 0 !important; overflow: visible !important;
-    }
-
-    .chip { border: 1px solid #ccc !important; color: #666 !important; background: white !important; }
-    .chip.active { background: #eee !important; color: black !important; font-weight: bold !important; }
+.login-footer a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
 }
