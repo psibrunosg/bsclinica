@@ -182,3 +182,37 @@ input:focus {
     text-decoration: none;
     font-weight: 600;
 }
+/* --- Estilos Específicos do Cadastro --- */
+.register-wrapper {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-color: var(--color-bg-body);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinha no topo, pois o form é longo */
+}
+
+.register-card {
+    background-color: var(--color-white);
+    width: 100%;
+    max-width: 600px; /* Mais largo que o login */
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-soft);
+    border-top: 5px solid var(--color-primary); /* Detalhe visual */
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    gap: 15px;
+}
+
+/* Em telas pequenas, vira uma coluna só */
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+}
+
+.hidden {
+    display: none; /* Classe utilitária para esconder campos */
+}
