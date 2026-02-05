@@ -31,7 +31,7 @@
                 <i class="fas fa-users"></i> Pacientes
             </div>
             <div class="nav-item" onclick="mostrarSecao('sec-salas', this)">
-                <i class="fas fa-door-open"></i> Agenda & Salas
+                <i class="fas fa-door-open"></i> Salas
             </div>
             <div class="nav-item" onclick="mostrarSecao('sec-cadastro', this)">
                 <i class="fas fa-user-plus"></i> Novo Cadastro
@@ -132,6 +132,7 @@
                                 <th>Nome</th>
                                 <th>Email</th>
                                 <th>Telefone</th>
+                                <th>CPF</th>
                                 <th style="text-align:right;">Ações</th>
                             </tr>
                         </thead>
@@ -153,31 +154,61 @@
                         <div style="margin-bottom: 1rem;">
                             <label>Tipo de Conta</label>
                             <select id="reg-role" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                                <option value="paciente">Paciente</option>
                                 <option value="psi">Psicólogo</option>
                                 <option value="recep">Recepcionista</option>
-                                <option value="paciente">Paciente</option>
                             </select>
                         </div>
                         
                         <div class="form-grid">
-                            <div><label>Nome</label><input type="text" id="reg-name" required></div>
-                            <div><label>Email</label><input type="email" id="reg-email" required></div>
+                            <div><label>Nome Completo</label><input type="text" id="reg-name" required></div>
+                            <div><label>Email (Login)</label><input type="email" id="reg-email" required></div>
                         </div>
 
                         <div class="form-grid">
-                            <div><label>Senha</label><input type="password" id="reg-pass" required></div>
-                            <div><label>Telefone</label><input type="tel" id="reg-phone"></div>
+                            <div><label>Senha Inicial</label><input type="password" id="reg-pass" required></div>
+                            <div><label>Celular / WhatsApp</label><input type="tel" id="reg-phone"></div>
                         </div>
 
-                        <div id="reg-psi-extras" style="background:#f0f8ff; padding:15px; border-radius:8px; display:block; margin-bottom: 15px;">
-                            <h4 style="margin-bottom:10px; font-size: 0.9rem;">Dados Profissionais</h4>
+                        <div id="reg-psi-extras" style="display:none; background:#f0f8ff; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                            <h4 style="margin-bottom:10px; font-size: 0.9rem; color: var(--color-primary);"><i class="fas fa-user-md"></i> Dados Profissionais</h4>
                             <div class="form-grid">
                                 <div><label>CRP</label><input type="text" id="reg-crp"></div>
                                 <div><label>Abordagem</label><input type="text" id="reg-abordagem"></div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%;">Realizar Cadastro</button>
+                        <div id="reg-paciente-extras" style="display:block; background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                            <h4 style="margin-bottom:10px; font-size: 0.9rem; color: #00695c;"><i class="fas fa-id-card"></i> Dados Pessoais</h4>
+                            <div class="form-grid">
+                                <div><label>CPF</label><input type="text" id="reg-cpf" placeholder="000.000.000-00"></div>
+                                <div><label>RG</label><input type="text" id="reg-rg"></div>
+                            </div>
+                            <div class="form-grid">
+                                <div><label>Data de Nascimento</label><input type="date" id="reg-nascimento"></div>
+                                <div>
+                                    <label>Gênero</label>
+                                    <select id="reg-genero" style="width: 100%; padding: 10px;">
+                                        <option value="">Selecione...</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Feminino">Feminino</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <h4 style="margin-top:15px; margin-bottom:10px; font-size: 0.9rem; color: #00695c;"><i class="fas fa-map-marker-alt"></i> Endereço</h4>
+                            <div class="form-grid">
+                                <div><label>Endereço</label><input type="text" id="reg-endereco" placeholder="Rua, Av..."></div>
+                                <div><label>Número</label><input type="text" id="reg-numero"></div>
+                            </div>
+                            <div class="form-grid">
+                                <div><label>Bairro</label><input type="text" id="reg-bairro"></div>
+                                <div><label>Cidade</label><input type="text" id="reg-cidade"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%;">Salvar Cadastro</button>
                         <p id="reg-error-msg" style="color: red; font-size: 0.9rem; margin-top: 10px; display: none;"></p>
                     </form>
                 </div>
@@ -192,32 +223,24 @@
                 <h3>Editar Usuário</h3>
                 <button onclick="fecharModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
             </div>
-            
             <form id="form-editar">
                 <input type="hidden" id="edit-uid"> 
                 <input type="hidden" id="edit-role"> 
-                
                 <div class="form-grid">
-                    <div>
-                        <label>Nome Completo</label>
-                        <input type="text" id="edit-nome" required>
-                    </div>
-                    <div>
-                        <label>Telefone</label>
-                        <input type="text" id="edit-telefone">
-                    </div>
+                    <div><label>Nome</label><input type="text" id="edit-nome" required></div>
+                    <div><label>Telefone</label><input type="text" id="edit-telefone"></div>
                 </div>
-
-                <div id="edit-extras-psi" style="display: none; background: #f0f8ff; padding: 10px; border-radius: 8px; margin-top: 10px;">
+                <div id="edit-extras-psi" style="display: none;">
                     <div class="form-grid">
                         <div><label>CRP</label><input type="text" id="edit-crp"></div>
                         <div><label>Abordagem</label><input type="text" id="edit-abordagem"></div>
                     </div>
                 </div>
-
+                <div id="edit-extras-paciente" style="display: none; margin-top:10px;">
+                    <div><label>CPF</label><input type="text" id="edit-cpf" style="width:100%"></div>
+                </div>
                 <div style="margin-top: 20px; text-align: right;">
-                    <button type="button" onclick="fecharModal()" class="btn-secondary" style="margin-right: 10px;">Cancelar</button>
-                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
                 </div>
             </form>
         </div>
@@ -229,23 +252,14 @@
                 <h3><i class="fas fa-calendar-plus"></i> Agendamento</h3>
                 <button onclick="fecharModalAgenda()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
-            
             <form id="form-agenda">
                 <input type="hidden" id="event-id">
-
                 <div class="form-grid">
-                    <div>
-                        <label>Data</label>
-                        <input type="date" id="evt-data" required>
-                    </div>
-                    <div>
-                        <label>Horário</label>
-                        <input type="time" id="evt-hora" required>
-                    </div>
+                    <div><label>Data</label><input type="date" id="evt-data" required></div>
+                    <div><label>Horário</label><input type="time" id="evt-hora" required></div>
                 </div>
-
                 <div style="margin-bottom: 15px;">
-                    <label>Sala de Atendimento</label>
+                    <label>Sala</label>
                     <select id="evt-sala" required style="width:100%; padding:10px;">
                         <option value="Sala 01">Sala 01 (Acolhimento) - Azul</option>
                         <option value="Sala 02">Sala 02 (TCC) - Verde</option>
@@ -254,37 +268,20 @@
                         <option value="Sala 05">Sala 05 (Online) - Cinza</option>
                     </select>
                 </div>
-
                 <div class="form-grid">
-                    <div>
-                        <label>Psicólogo</label>
-                        <select id="evt-psi" required>
-                            <option value="">Carregando...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Paciente</label>
-                        <select id="evt-paciente" required>
-                            <option value="">Carregando...</option>
-                        </select>
-                    </div>
+                    <div><label>Psicólogo</label><select id="evt-psi" required><option value="">Carregando...</option></select></div>
+                    <div><label>Paciente</label><select id="evt-paciente" required><option value="">Carregando...</option></select></div>
                 </div>
-
                 <div style="margin-top: 15px;">
-                    <label>Tipo de Sessão</label>
-                    <input type="text" id="evt-tipo" placeholder="Ex: Terapia Individual" list="tipos-sessao">
+                    <label>Tipo</label>
+                    <input type="text" id="evt-tipo" list="tipos-sessao">
                     <datalist id="tipos-sessao">
-                        <option value="Terapia Individual">
-                        <option value="Avaliação">
-                        <option value="Terapia de Casal">
+                        <option value="Terapia Individual"><option value="Avaliação"><option value="Terapia de Casal">
                     </datalist>
                 </div>
-
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" id="btn-excluir-evento" class="btn-secondary" style="color: #e74c3c; border-color: #e74c3c; display: none;" onclick="excluirAgendamento()">
-                        <i class="fas fa-trash"></i> Excluir
-                    </button>
-                    <button type="submit" class="btn-primary">Confirmar Agenda</button>
+                    <button type="button" id="btn-excluir-evento" class="btn-secondary" style="color: #e74c3c; display: none;" onclick="excluirAgendamento()"><i class="fas fa-trash"></i></button>
+                    <button type="submit" class="btn-primary">Confirmar</button>
                 </div>
             </form>
         </div>
