@@ -42,8 +42,8 @@
         </div>
     </div>
 
-   <script type="module">
-        // Importa o auth do arquivo que acabamos de criar
+    <script type="module">
+        // Importa a configuração do Firebase da pasta assets
         import { auth } from './assets/firebase.js';
         import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 
@@ -53,32 +53,42 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const btn = document.querySelector('button[type="submit"]');
+            const originalBtnText = btn.textContent;
 
             try {
                 // Feedback visual de carregamento
-                btn.textContent = "Entrando...";
+                btn.textContent = "Verificando...";
                 btn.disabled = true;
+                btn.style.opacity = "0.7";
 
                 // Tenta fazer o login real no Firebase
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
                 console.log("Login sucesso:", user.uid);
-                alert("Login realizado com sucesso! (Conectado ao Firebase)");
                 
-                // AQUI: Futuramente vamos redirecionar baseada na role do usuário
-                // window.location.href = "/dashboard.html";
+                // Redirecionamento Automático
+                // Como você é o Líder, vamos para a tela de cadastro primeiro
+                window.location.href = "register.html";
 
             } catch (error) {
-                console.error(error);
-                let msg = "Erro ao entrar.";
-                if (error.code === 'auth/invalid-credential') msg = "E-mail ou senha incorretos.";
-                if (error.code === 'auth/too-many-requests') msg = "Muitas tentativas. Tente mais tarde.";
+                console.error("Erro Firebase:", error.code, error.message);
+                
+                let msg = "Erro ao entrar no sistema.";
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "E-mail ou senha incorretos. Verifique seus dados.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    msg = "Muitas tentativas falhas. Aguarde alguns minutos.";
+                } else if (error.code === 'auth/network-request-failed') {
+                    msg = "Sem conexão com a internet.";
+                }
                 
                 alert(msg);
-            } finally {
-                btn.textContent = "Entrar na Plataforma";
+                
+                // Restaura o botão apenas se deu erro
+                btn.textContent = originalBtnText;
                 btn.disabled = false;
+                btn.style.opacity = "1";
             }
         });
     </script>
