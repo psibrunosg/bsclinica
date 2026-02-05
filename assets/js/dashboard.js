@@ -1,4 +1,5 @@
 // Arquivo: assets/js/dashboard.js
+
 import { auth, db } from '../firebase.js'; 
 import { signOut, onAuthStateChanged, getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
@@ -24,6 +25,7 @@ window.mostrarSecao = function(id, el) {
 }
 
 window.abrirCadastroPaciente = function() {
+    fecharModalAgenda();
     mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[5]);
     const sel = document.getElementById('reg-role');
     sel.value = 'paciente';
@@ -32,20 +34,16 @@ window.abrirCadastroPaciente = function() {
 
 // --- CARREGAMENTO DE LISTAS ---
 function carregarListas() {
-    // 1. LISTA CORPO CLÍNICO (Todo mundo que não é paciente nem recepção)
-    // Infelizmente o Firestore não tem "not-in" fácil em queries complexas sem índice, 
-    // então vamos pegar 'role' != 'paciente' filtrando no front ou fazendo múltiplas queries.
-    // Para simplificar, vamos pegar TUDO e filtrar aqui.
     onSnapshot(collection(db, "users"), (snap) => {
         const listaEquipe = document.getElementById('lista-equipe');
         const listaRecep = document.getElementById('lista-recep');
         const listaPac = document.getElementById('lista-pacientes');
-        const selectProf = document.getElementById('evt-psi'); // Select da Agenda
+        const selectPac = document.getElementById('evt-paciente');
         
         if(listaEquipe) listaEquipe.innerHTML = "";
         if(listaRecep) listaRecep.innerHTML = "";
         if(listaPac) listaPac.innerHTML = "";
-        if(selectProf) selectProf.innerHTML = '<option value="">Selecione...</option>';
+        if(selectPac) selectPac.innerHTML = '<option value="">-- Selecione --</option>';
         
         let countEquipe = 0;
         let countPac = 0;
@@ -53,76 +51,103 @@ function carregarListas() {
         snap.forEach((doc) => {
             const d = doc.data();
             const role = d.role;
-
-            // Botões de Ação Comuns
             const actions = `
                 <td style="text-align:right;">
                     <button onclick="abrirEditor('${doc.id}')" style="color:#2980b9; border:none; background:none; cursor:pointer;"><i class="fas fa-edit"></i></button>
                     <button onclick="excluirUsuario('${doc.id}', '${d.nome}')" style="color:#e74c3c; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
                 </td>`;
 
-            // Lógica de Separação
             if (role === 'paciente') {
                 countPac++;
-                if(listaPac) {
-                    listaPac.innerHTML += `<tr>
-                        <td><strong>${d.nome}</strong></td>
-                        <td>${d.email}</td>
-                        <td>${d.telefone || '-'}</td>
-                        <td>${d.cpf || '-'}</td>
-                        ${actions}
-                    </tr>`;
-                }
-                // Adiciona ao select de pacientes da agenda
-                const selPac = document.getElementById('evt-paciente');
-                if(selPac && !Array.from(selPac.options).some(o => o.value === d.nome)) {
+                if(listaPac) listaPac.innerHTML += `<tr><td><strong>${d.nome}</strong></td><td>${d.email}</td><td>${d.telefone||'-'}</td><td>${d.cpf||'-'}</td>${actions}</tr>`;
+                if(selectPac) {
                     const opt = document.createElement('option');
                     opt.value = d.nome; opt.text = d.nome;
-                    selPac.appendChild(opt);
+                    selectPac.appendChild(opt);
                 }
-
             } else if (role === 'recep' || role === 'admin') {
-                if(listaRecep) {
-                    listaRecep.innerHTML += `<tr>
-                        <td><span class="status-badge status-online"></span></td>
-                        <td><strong>${d.nome}</strong></td>
-                        <td>${d.telefone || d.email}</td>
-                        ${actions}
-                    </tr>`;
-                }
+                if(listaRecep) listaRecep.innerHTML += `<tr><td><span class="status-badge status-online"></span></td><td><strong>${d.nome}</strong></td><td>${d.telefone||d.email}</td>${actions}</tr>`;
             } else {
-                // É DO CORPO CLÍNICO (psi, nutri, medico...)
                 countEquipe++;
-                // Nome bonito do cargo
                 let cargo = role.toUpperCase();
-                if(role === 'psi') cargo = 'Psicólogo(a)';
-                if(role === 'nutri') cargo = 'Nutricionista';
-                if(role === 'fisio') cargo = 'Fisioterapeuta';
-                
-                if(listaEquipe) {
-                    listaEquipe.innerHTML += `<tr>
-                        <td><span class="status-badge status-online"></span></td>
-                        <td><strong>${d.nome}</strong></td>
-                        <td>${cargo} <br><small style="color:#666">${d.especialidade || ''}</small></td>
-                        <td>${d.registroProfissional || '-'}</td>
-                        ${actions}
-                    </tr>`;
-                }
-                // Adiciona ao Select da Agenda
-                if(selectProf) {
-                    const opt = document.createElement('option');
-                    opt.value = doc.id; opt.text = d.nome + " (" + cargo + ")";
-                    selectProf.appendChild(opt);
-                }
+                if(role === 'psi') cargo = 'Psicólogo';
+                if(listaEquipe) listaEquipe.innerHTML += `<tr><td><span class="status-badge status-online"></span></td><td><strong>${d.nome}</strong></td><td>${cargo}</td><td>${d.registroProfissional||'-'}</td>${actions}</tr>`;
             }
         });
-        
         document.getElementById('count-equipe').innerText = countEquipe;
         document.getElementById('count-pacientes').innerText = countPac;
     });
 }
 
-// --- AGENDA ---
+// --- EDIÇÃO RESTAURADA (AGORA SIM!) ---
+window.abrirEditor = async function(uid) {
+    const modal = document.getElementById('modal-editar');
+    modal.style.display = 'flex';
+    
+    try {
+        const docSnap = await getDoc(doc(db, "users", uid));
+        if(docSnap.exists()) {
+            const d = docSnap.data();
+            
+            // Campos Comuns
+            document.getElementById('edit-uid').value = uid;
+            document.getElementById('edit-role').value = d.role;
+            document.getElementById('edit-nome').value = d.nome;
+            document.getElementById('edit-telefone').value = d.telefone || '';
+
+            // Esconde áreas específicas
+            document.getElementById('edit-extras-paciente').style.display = 'none';
+            document.getElementById('edit-extras-prof').style.display = 'none';
+
+            // Preenche Paciente
+            if (d.role === 'paciente') {
+                document.getElementById('edit-extras-paciente').style.display = 'block';
+                document.getElementById('edit-cpf').value = d.cpf || '';
+                document.getElementById('edit-nascimento').value = d.nascimento || '';
+                document.getElementById('edit-endereco').value = d.endereco || '';
+                document.getElementById('edit-cidade').value = d.cidade || '';
+            } 
+            // Preenche Profissional
+            else if (['psi', 'psiquiatra', 'nutri', 'feno', 'fisio', 'educador', 'outro_saude'].includes(d.role)) {
+                document.getElementById('edit-extras-prof').style.display = 'block';
+                document.getElementById('edit-registro').value = d.registroProfissional || '';
+                document.getElementById('edit-especialidade').value = d.especialidade || '';
+                document.getElementById('edit-bio').value = d.bio || '';
+            }
+        }
+    } catch (e) { console.error(e); alert("Erro ao carregar"); }
+}
+
+window.fecharModal = () => document.getElementById('modal-editar').style.display = 'none';
+
+document.getElementById('form-editar').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const uid = document.getElementById('edit-uid').value;
+    const role = document.getElementById('edit-role').value;
+    
+    const dados = {
+        nome: document.getElementById('edit-nome').value,
+        telefone: document.getElementById('edit-telefone').value
+    };
+
+    if (role === 'paciente') {
+        dados.cpf = document.getElementById('edit-cpf').value;
+        dados.nascimento = document.getElementById('edit-nascimento').value;
+        dados.endereco = document.getElementById('edit-endereco').value;
+        dados.cidade = document.getElementById('edit-cidade').value;
+    } 
+    else if (['psi', 'psiquiatra', 'nutri', 'feno', 'fisio', 'educador', 'outro_saude'].includes(role)) {
+        dados.registroProfissional = document.getElementById('edit-registro').value;
+        dados.especialidade = document.getElementById('edit-especialidade').value;
+        dados.bio = document.getElementById('edit-bio').value;
+    }
+
+    await updateDoc(doc(db, "users", uid), dados);
+    alert("Dados atualizados!");
+    fecharModal();
+});
+
+// --- AGENDA & CALENDÁRIO ---
 function inicializarAgenda() {
     const el = document.getElementById('calendar');
     if (!el) return;
@@ -131,17 +156,20 @@ function inicializarAgenda() {
         headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
         locale: 'pt-br', slotMinTime: "07:00:00", slotMaxTime: "22:00:00", allDaySlot: false,
         selectable: true, editable: true,
+        
         dateClick: function(info) {
             let d = info.dateStr.split('T')[0];
-            let h = info.dateStr.includes('T') ? info.dateStr.split('T')[1].substring(0,5) : "08:00";
-            abrirModalAgenda(null, d, h);
+            let hInicio = info.dateStr.includes('T') ? info.dateStr.split('T')[1].substring(0,5) : "08:00";
+            let hFim = calcularHoraFim(hInicio);
+            abrirModalAgenda(null, d, hInicio, hFim);
         },
-        eventClick: function(info) { abrirModalAgenda(info.event); },
+        eventClick: function(info) { abrirPopoverEvento(info.event, info.jsEvent); },
         eventDrop: async function(info) {
              if(confirm("Mover para " + info.event.start.toLocaleString() + "?")) {
                 let d = info.event.start.toISOString().split('T')[0];
-                let h = info.event.start.toTimeString().substring(0,5);
-                await updateDoc(doc(db, "agendamentos", info.event.id), { data: d, hora: h });
+                let hStart = info.event.start.toTimeString().substring(0,5);
+                let hEnd = info.event.end ? info.event.end.toTimeString().substring(0,5) : calcularHoraFim(hStart);
+                await updateDoc(doc(db, "agendamentos", info.event.id), { data: d, horaInicio: hStart, horaFim: hEnd });
             } else info.revert();
         }
     });
@@ -149,26 +177,138 @@ function inicializarAgenda() {
     
     onSnapshot(collection(db, "agendamentos"), (snap) => {
         calendar.removeAllEvents();
-        const evs = snap.docs.map(d => ({
-            id: d.id,
-            title: `${d.paciente} (${d.psiNome})`,
-            start: `${d.data}T${d.hora}`,
-            backgroundColor: corSala(d.sala),
-            borderColor: corSala(d.sala),
-            extendedProps: { ...d.data() }
-        }));
+        const evs = snap.docs.map(d => {
+            const data = d.data();
+            return {
+                id: d.id,
+                title: data.paciente,
+                start: `${data.data}T${data.horaInicio}`,
+                end: `${data.data}T${data.horaFim}`,
+                backgroundColor: corSala(data.sala),
+                borderColor: corSala(data.sala),
+                extendedProps: { ...data }
+            };
+        });
         calendar.addEventSource(evs);
     });
 }
+
 function corSala(s) {
-    if(s.includes('01')) return '#3498db';
-    if(s.includes('02')) return '#27ae60';
-    if(s.includes('03')) return '#e67e22';
-    if(s.includes('04')) return '#9b59b6';
+    if(s && s.includes('01')) return '#3498db';
+    if(s && s.includes('02')) return '#27ae60';
+    if(s && s.includes('03')) return '#e67e22';
+    if(s && s.includes('04')) return '#9b59b6';
     return '#7f8c8d';
 }
 
-// --- CADASTRO INTELIGENTE ---
+function calcularHoraFim(inicio) {
+    let [h, m] = inicio.split(':').map(Number);
+    let date = new Date(); date.setHours(h); date.setMinutes(m + 30);
+    return date.toTimeString().substring(0,5);
+}
+
+// --- POPOVER ---
+window.abrirPopoverEvento = function(evento, jsEvent) {
+    const pop = document.getElementById('event-popover');
+    const p = evento.extendedProps;
+    document.getElementById('pop-event-id').value = evento.id;
+    document.getElementById('pop-color').style.backgroundColor = evento.backgroundColor;
+    document.getElementById('pop-paciente').innerText = p.paciente;
+    document.getElementById('pop-tipo').innerText = p.servico || "Sessão";
+    document.getElementById('pop-modo').innerText = p.modalidade || "Presencial";
+    
+    let dataObj = new Date(p.data + 'T00:00:00');
+    document.getElementById('pop-data').innerText = dataObj.toLocaleDateString('pt-BR', {weekday: 'long', day:'numeric', month:'numeric'});
+    document.getElementById('pop-hora').innerText = `${p.horaInicio} às ${p.horaFim}`;
+    document.getElementById('pop-status').value = p.status || "Agendado";
+    
+    let left = jsEvent.pageX + 20;
+    let top = jsEvent.pageY - 50;
+    if (jsEvent.pageX > window.innerWidth - 350) left = jsEvent.pageX - 340;
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.display = 'block';
+}
+
+window.fecharPopover = () => document.getElementById('event-popover').style.display = 'none';
+
+window.atualizarStatusAgenda = async function(novoStatus) {
+    const id = document.getElementById('pop-event-id').value;
+    await updateDoc(doc(db, "agendamentos", id), { status: novoStatus });
+}
+
+window.acaoPopover = function(acao) {
+    const id = document.getElementById('pop-event-id').value;
+    if (acao === 'excluir') {
+        if(confirm("Excluir este agendamento?")) {
+            deleteDoc(doc(db, "agendamentos", id));
+            fecharPopover();
+        }
+    } else if (acao === 'editar') {
+        const evento = calendar.getEventById(id);
+        if(evento) {
+            fecharPopover();
+            const p = evento.extendedProps;
+            abrirModalAgenda(evento, p.data, p.horaInicio, p.horaFim);
+        }
+    }
+}
+
+// --- MODAL AGENDA ---
+window.setTipoEvento = function(tipo, btn) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('evt-categoria').value = tipo;
+}
+
+window.abrirModalAgenda = function(evento, dataStr, horaInicio, horaFim) {
+    const modal = document.getElementById('modal-agenda');
+    const form = document.getElementById('form-agenda');
+    form.reset();
+    setTipoEvento('Individual', document.querySelector('.toggle-btn')); 
+
+    if(evento) {
+        const p = evento.extendedProps;
+        document.getElementById('event-id').value = evento.id;
+        document.getElementById('evt-data').value = p.data;
+        document.getElementById('evt-hora-inicio').value = p.horaInicio;
+        document.getElementById('evt-hora-fim').value = p.horaFim;
+        document.getElementById('evt-sala').value = p.sala || "Sala 01";
+        document.getElementById('evt-servico').value = p.servico || "Terapia Individual";
+        setTimeout(() => { document.getElementById('evt-paciente').value = p.paciente; }, 100);
+    } else {
+        document.getElementById('event-id').value = "";
+        document.getElementById('evt-data').value = dataStr;
+        document.getElementById('evt-hora-inicio').value = horaInicio;
+        document.getElementById('evt-hora-fim').value = horaFim;
+    }
+    modal.style.display = 'flex';
+}
+
+window.fecharModalAgenda = () => document.getElementById('modal-agenda').style.display = 'none';
+
+document.getElementById('form-agenda').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('event-id').value;
+    const dados = {
+        categoria: document.getElementById('evt-categoria').value,
+        paciente: document.getElementById('evt-paciente').value,
+        data: document.getElementById('evt-data').value,
+        horaInicio: document.getElementById('evt-hora-inicio').value,
+        horaFim: document.getElementById('evt-hora-fim').value,
+        sala: document.getElementById('evt-sala').value,
+        servico: document.getElementById('evt-servico').value,
+        status: "Agendado",
+        psiNome: document.getElementById('adminName').innerText
+    };
+    try {
+        if(id) await updateDoc(doc(db, "agendamentos", id), dados);
+        else await setDoc(doc(collection(db, "agendamentos")), dados);
+        fecharModalAgenda();
+    } catch (err) { alert("Erro: " + err.message); } 
+});
+
+// --- CADASTRO (TURBINADO) ---
 const formReg = document.getElementById('internalRegisterForm');
 if(formReg) {
     formReg.addEventListener('submit', async (e) => {
@@ -197,21 +337,20 @@ if(formReg) {
                 criadoEm: serverTimestamp()
             };
 
-            // SE FOR PACIENTE
             if(role === 'paciente') {
                 userData.cpf = document.getElementById('reg-cpf').value;
                 userData.nascimento = document.getElementById('reg-nascimento').value;
                 userData.endereco = document.getElementById('reg-endereco').value;
+                userData.cidade = document.getElementById('reg-cidade').value;
                 userData.respNome = document.getElementById('reg-resp-nome').value;
+                userData.respTel = document.getElementById('reg-resp-tel').value;
             } 
-            // SE FOR CORPO CLÍNICO (Qualquer um da lista de saúde)
             else if (['psi', 'psiquiatra', 'nutri', 'feno', 'fisio', 'educador', 'outro_saude'].includes(role)) {
-                userData.registroProfissional = document.getElementById('reg-registro-prof').value; // CRP, CRM...
+                userData.registroProfissional = document.getElementById('reg-registro-prof').value;
                 userData.especialidade = document.getElementById('reg-especialidade').value;
                 userData.valorSessao = document.getElementById('reg-valor').value;
                 userData.bio = document.getElementById('reg-bio').value;
                 userData.formacao = document.getElementById('reg-formacao').value;
-                userData.enderecoProf = document.getElementById('reg-prof-endereco').value;
             }
             
             await setDoc(doc(db, "users", cred.user.uid), userData);
@@ -222,87 +361,20 @@ if(formReg) {
     });
 }
 
-// Controle de Campos Extras (Show/Hide)
+// UI Helpers
 const selRole = document.getElementById('reg-role');
 if(selRole) {
     selRole.addEventListener('change', function() {
-        const areaProf = document.getElementById('reg-prof-extras');
-        const areaPac = document.getElementById('reg-paciente-extras');
-        const lblReg = document.getElementById('lbl-registro');
-        
-        areaProf.style.display = 'none';
-        areaPac.style.display = 'none';
-
-        const val = this.value;
-
-        if (val === 'paciente') {
-            areaPac.style.display = 'block';
-        } 
-        else if (['psi', 'psiquiatra', 'nutri', 'feno', 'fisio', 'educador', 'outro_saude'].includes(val)) {
-            areaProf.style.display = 'block';
-            
-            // Muda o label do registro dinamicamente
-            if(val === 'psi') lblReg.innerText = "CRP";
-            else if(val === 'psiquiatra') lblReg.innerText = "CRM";
-            else if(val === 'nutri') lblReg.innerText = "CRN";
-            else if(val === 'fisio') lblReg.innerText = "CREFITO";
-            else if(val === 'educador') lblReg.innerText = "CREF";
-            else lblReg.innerText = "Registro Profissional";
+        document.getElementById('reg-prof-extras').style.display = 'none';
+        document.getElementById('reg-paciente-extras').style.display = 'none';
+        if (this.value === 'paciente') document.getElementById('reg-paciente-extras').style.display = 'block';
+        else if (['psi', 'psiquiatra', 'nutri', 'feno', 'fisio', 'educador', 'outro_saude'].includes(this.value)) {
+            document.getElementById('reg-prof-extras').style.display = 'block';
         }
     });
 }
 
-// --- MODAIS ---
-window.abrirModalAgenda = function(ev, d, h) {
-    const m = document.getElementById('modal-agenda');
-    document.getElementById('form-agenda').reset();
-    m.style.display = 'flex';
-    if(ev) {
-        const p = ev.extendedProps;
-        document.getElementById('event-id').value = ev.id;
-        document.getElementById('evt-data').value = p.data;
-        document.getElementById('evt-hora').value = p.hora;
-        document.getElementById('evt-sala').value = p.sala || "Sala 01";
-        document.getElementById('btn-excluir-evento').style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('evt-psi').value = p.psiId;
-            document.getElementById('evt-paciente').value = p.paciente;
-        }, 200);
-    } else {
-        document.getElementById('event-id').value = "";
-        document.getElementById('evt-data').value = d;
-        document.getElementById('evt-hora').value = h;
-        document.getElementById('btn-excluir-evento').style.display = 'none';
-    }
-}
-window.fecharModalAgenda = () => document.getElementById('modal-agenda').style.display = 'none';
-window.excluirAgendamento = async () => {
-    let id = document.getElementById('event-id').value;
-    if(confirm('Excluir?')) { await deleteDoc(doc(db, "agendamentos", id)); fecharModalAgenda(); }
-}
-
-document.getElementById('form-agenda').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    let id = document.getElementById('event-id').value;
-    let sPsi = document.getElementById('evt-psi');
-    let data = {
-        data: document.getElementById('evt-data').value,
-        hora: document.getElementById('evt-hora').value,
-        sala: document.getElementById('evt-sala').value,
-        tipo: document.getElementById('evt-tipo').value,
-        psiId: sPsi.value,
-        psiNome: sPsi.options[sPsi.selectedIndex].text,
-        paciente: document.getElementById('evt-paciente').value
-    };
-    if(id) await updateDoc(doc(db, "agendamentos", id), data);
-    else await setDoc(doc(collection(db, "agendamentos")), data);
-    fecharModalAgenda();
-});
-
-// Genéricos
 window.excluirUsuario = async (uid, nome) => { if(confirm(`Excluir ${nome}?`)) await deleteDoc(doc(db, "users", uid)); };
-window.abrirEditor = (uid) => { /* Código similar ao anterior se quiser editar, simplifiquei aqui por espaço */ alert("Função Editar disponível no código anterior, adicione se precisar"); };
-window.fecharModal = () => document.getElementById('modal-editar').style.display = 'none';
 document.getElementById('btnLogout').addEventListener('click', () => signOut(auth).then(() => window.location.href="index.html"));
 
 // START
