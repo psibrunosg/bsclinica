@@ -75,7 +75,7 @@
 
                 <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
                     <div style="background: var(--color-primary); color: white; padding: 15px; font-weight: bold;">
-                        <i class="fas fa-stethoscope"></i> Corpo Clínico (Psis, Médicos, Nutris...)
+                        <i class="fas fa-stethoscope"></i> Corpo Clínico
                     </div>
                     <table class="data-table">
                         <thead>
@@ -83,7 +83,7 @@
                                 <th>Status</th>
                                 <th>Profissional</th>
                                 <th>Especialidade/Cargo</th>
-                                <th>Registro (Conselho)</th>
+                                <th>Registro</th>
                                 <th style="text-align: right;">Ações</th>
                             </tr>
                         </thead>
@@ -93,7 +93,7 @@
 
                 <div class="card" style="padding: 0; overflow: hidden;">
                     <div style="background: #546E7A; color: white; padding: 15px; font-weight: bold;">
-                        <i class="fas fa-concierge-bell"></i> Recepção & Administrativo
+                        <i class="fas fa-concierge-bell"></i> Recepção & Admin
                     </div>
                     <table class="data-table">
                         <thead>
@@ -180,59 +180,31 @@
                         </div>
 
                         <div id="reg-prof-extras" style="display:none; margin-top: 15px;">
-                            
                             <div style="background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom: 15px;">
                                 <h4 style="margin-bottom:10px; color: #1565c0;"><i class="fas fa-id-badge"></i> Dados Profissionais</h4>
                                 <div class="form-grid">
-                                    <div>
-                                        <label id="lbl-registro">Registro Profissional (CRP/CRM...)</label>
-                                        <input type="text" id="reg-registro-prof">
-                                    </div>
-                                    <div><label>Abordagem / Especialidade</label><input type="text" id="reg-especialidade" placeholder="Ex: TCC, Nutrição Esportiva..."></div>
+                                    <div><label id="lbl-registro">Registro Profissional</label><input type="text" id="reg-registro-prof"></div>
+                                    <div><label>Especialidade</label><input type="text" id="reg-especialidade"></div>
                                 </div>
                                 <div class="form-grid">
-                                    <div>
-                                        <label>Tipo de Atendimento</label>
-                                        <select id="reg-tipo-atend">
-                                            <option value="Hibrido">Presencial e Online</option>
-                                            <option value="Presencial">Apenas Presencial</option>
-                                            <option value="Online">Apenas Online</option>
-                                        </select>
-                                    </div>
-                                    <div><label>Valor da Sessão (R$)</label><input type="text" id="reg-valor"></div>
+                                    <div><label>Valor Sessão (R$)</label><input type="text" id="reg-valor"></div>
                                 </div>
                             </div>
-
-                            <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                                <h4 style="margin-bottom:10px; color: #e65100;"><i class="fas fa-bullhorn"></i> Perfil Público (Marketing)</h4>
-                                <div>
-                                    <label>Sobre mim (Bio)</label>
-                                    <textarea id="reg-bio" rows="4" placeholder="Minha jornada na Psicologia nasceu..." style="width:100%; padding:10px;"></textarea>
-                                </div>
-                                <div style="margin-top:10px;">
-                                    <label>Formação e Currículo</label>
-                                    <textarea id="reg-formacao" rows="3" placeholder="Graduação, Pós-graduação..." style="width:100%; padding:10px;"></textarea>
-                                </div>
-                            </div>
-
-                            <div style="background:#f3e5f5; padding:15px; border-radius:8px;">
-                                <h4 style="margin-bottom:10px; color: #6a1b9a;"><i class="fas fa-map-marked-alt"></i> Endereço de Atendimento</h4>
-                                <div class="form-grid">
-                                    <div><label>CEP</label><input type="text" id="reg-prof-cep"></div>
-                                    <div><label>Cidade/UF</label><input type="text" id="reg-prof-cidade"></div>
-                                </div>
-                                <div class="form-grid">
-                                    <div style="grid-column: span 2;"><label>Endereço e Número</label><input type="text" id="reg-prof-endereco"></div>
-                                </div>
+                            <div style="background:#fff3e0; padding:15px; border-radius:8px;">
+                                <h4 style="margin-bottom:10px; color: #e65100;">Marketing</h4>
+                                <label>Bio / Sobre Mim</label>
+                                <textarea id="reg-bio" rows="3" style="width:100%;"></textarea>
+                                <label style="margin-top:10px; display:block;">Formação</label>
+                                <textarea id="reg-formacao" rows="2" style="width:100%;"></textarea>
                             </div>
                         </div>
 
                         <div id="reg-paciente-extras" style="display:none; margin-top: 15px;">
                             <div style="background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                                <h4 style="color: #00695c;"><i class="fas fa-user-circle"></i> Dados Pessoais</h4>
+                                <h4 style="color: #00695c;">Dados Pessoais</h4>
                                 <div class="form-grid">
                                     <div><label>CPF</label><input type="text" id="reg-cpf"></div>
-                                    <div><label>Data Nascimento</label><input type="date" id="reg-nascimento"></div>
+                                    <div><label>Data Nasc.</label><input type="date" id="reg-nascimento"></div>
                                 </div>
                                 <div class="form-grid">
                                     <div><label>Endereço</label><input type="text" id="reg-endereco"></div>
@@ -240,17 +212,15 @@
                                 </div>
                             </div>
                             <div style="background:#ffebee; padding:15px; border-radius:8px;">
-                                <h4 style="color: #c62828;"><i class="fas fa-heartbeat"></i> Responsável / Emergência</h4>
+                                <h4 style="color: #c62828;">Responsável</h4>
                                 <div class="form-grid">
-                                    <div><label>Nome Responsável</label><input type="text" id="reg-resp-nome"></div>
+                                    <div><label>Nome</label><input type="text" id="reg-resp-nome"></div>
                                     <div><label>Telefone</label><input type="text" id="reg-resp-tel"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.1rem;">
-                            <i class="fas fa-save"></i> Finalizar Cadastro
-                        </button>
+                        <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; padding: 15px;">Salvar Cadastro</button>
                     </form>
                 </div>
             </section>
@@ -258,56 +228,123 @@
         </main>
     </div>
 
+    <div id="event-popover" class="event-popover" style="display:none;">
+        <div class="popover-header">
+            <i class="fas fa-trash-alt" title="Excluir" onclick="acaoPopover('excluir')"></i>
+            <i class="fas fa-pencil-alt" title="Editar" onclick="acaoPopover('editar')"></i>
+            <i class="fas fa-times" title="Fechar" onclick="fecharPopover()"></i>
+        </div>
+        <div class="popover-body">
+            <div class="popover-title">
+                <span id="pop-color" class="popover-color-tag"></span>
+                <span id="pop-paciente">Nome do Paciente</span>
+            </div>
+            <div class="popover-tags">
+                <span class="pop-tag" id="pop-tipo">Sessão</span>
+                <span class="pop-tag" id="pop-modo">Presencial</span>
+            </div>
+            <div class="popover-info"><strong>Data:</strong> <span id="pop-data">-</span></div>
+            <div class="popover-info"><strong>Horário:</strong> <span id="pop-hora">-</span></div>
+            <select id="pop-status" class="popover-status-select" onchange="atualizarStatusAgenda(this.value)">
+                <option value="Agendado">📅 Agendado</option>
+                <option value="Confirmado">✅ Confirmado</option>
+                <option value="Paciente ausente">👎 Ausente</option>
+                <option value="Cancelado">❌ Cancelado</option>
+            </select>
+            <input type="hidden" id="pop-event-id">
+        </div>
+    </div>
+
     <div id="modal-agenda" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3><i class="fas fa-calendar-plus"></i> Agendamento</h3>
+        <div class="modal-card" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Agendamento</h3>
                 <button onclick="fecharModalAgenda()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
             <form id="form-agenda">
                 <input type="hidden" id="event-id">
-                <div class="form-grid">
-                    <div><label>Data</label><input type="date" id="evt-data" required></div>
-                    <div><label>Horário</label><input type="time" id="evt-hora" required></div>
+                <div class="toggle-group">
+                    <button type="button" class="toggle-btn active" onclick="setTipoEvento('Individual', this)">Individual</button>
+                    <button type="button" class="toggle-btn" onclick="setTipoEvento('Grupo', this)">Grupo</button>
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <label>Sala</label>
-                    <select id="evt-sala" required style="width:100%; padding:10px;">
-                        <option value="Sala 01">Sala 01 (Acolhimento) - Azul</option>
-                        <option value="Sala 02">Sala 02 (TCC) - Verde</option>
-                        <option value="Sala 03">Sala 03 (Infantil) - Laranja</option>
-                        <option value="Sala 04">Sala 04 (Grupo) - Roxo</option>
-                        <option value="Sala 05">Sala 05 (Online) - Cinza</option>
+                <input type="hidden" id="evt-categoria" value="Individual">
+
+                <div class="form-grid" style="margin-top:15px;">
+                    <div style="grid-column: span 2;">
+                        <label>Cliente</label>
+                        <select id="evt-paciente" required style="width:100%; padding:8px;">
+                            <option value="">-- Selecione --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid" style="margin-top:15px;">
+                    <div style="grid-column: span 2; display:flex; gap:10px;">
+                        <input type="date" id="evt-data" required style="flex:2;">
+                        <input type="time" id="evt-hora-inicio" required style="flex:1;">
+                        <input type="time" id="evt-hora-fim" required style="flex:1;">
+                    </div>
+                </div>
+                <div style="margin-top:15px;">
+                    <label>Sala (Cor)</label>
+                    <select id="evt-sala" style="width:100%; padding:8px;">
+                        <option value="Sala 01">Sala 01 - Azul</option>
+                        <option value="Sala 02">Sala 02 - Verde</option>
+                        <option value="Sala 03">Sala 03 - Laranja</option>
+                        <option value="Sala 04">Sala 04 - Roxo</option>
                     </select>
                 </div>
-                <div class="form-grid">
-                    <div><label>Profissional</label><select id="evt-psi" required><option value="">Carregando...</option></select></div>
-                    <div><label>Paciente</label><select id="evt-paciente" required><option value="">Carregando...</option></select></div>
+                <div style="margin-top:15px;">
+                    <label>Serviço</label>
+                    <select id="evt-servico" style="width:100%; padding:8px;">
+                        <option value="Terapia Individual">Terapia Individual</option>
+                        <option value="Avaliação">Avaliação</option>
+                    </select>
                 </div>
-                <div style="margin-top: 15px;">
-                    <label>Tipo</label>
-                    <input type="text" id="evt-tipo" list="tipos-sessao">
-                    <datalist id="tipos-sessao">
-                        <option value="Terapia Individual"><option value="Consulta"><option value="Avaliação">
-                    </datalist>
-                </div>
-                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" id="btn-excluir-evento" class="btn-secondary" style="color: #e74c3c; display: none;" onclick="excluirAgendamento()"><i class="fas fa-trash"></i></button>
-                    <button type="submit" class="btn-primary">Confirmar</button>
-                </div>
+                <button type="submit" class="btn-primary" style="margin-top:20px; width:100%;">Salvar</button>
             </form>
         </div>
     </div>
-    
+
     <div id="modal-editar" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <h3>Editar Dados</h3>
+        <div class="modal-card" style="max-width:700px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Editar Dados</h3>
+                <button onclick="fecharModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
             <form id="form-editar">
-                <input type="hidden" id="edit-uid"><input type="hidden" id="edit-role">
-                <label>Nome</label><input type="text" id="edit-nome" style="width:100%; margin-bottom:10px;">
-                <label>Telefone</label><input type="text" id="edit-telefone" style="width:100%; margin-bottom:10px;">
-                <button type="submit" class="btn-primary">Salvar</button>
-                <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+                <input type="hidden" id="edit-uid">
+                <input type="hidden" id="edit-role">
+
+                <div class="form-grid">
+                    <div><label>Nome</label><input type="text" id="edit-nome" style="width:100%;"></div>
+                    <div><label>Telefone</label><input type="text" id="edit-telefone" style="width:100%;"></div>
+                </div>
+
+                <div id="edit-extras-paciente" style="display:none; margin-top:15px; background:#e0f2f1; padding:10px; border-radius:5px;">
+                    <h4 style="color:#00695c;">Dados Paciente</h4>
+                    <div class="form-grid">
+                        <div><label>CPF</label><input type="text" id="edit-cpf"></div>
+                        <div><label>Data Nasc</label><input type="date" id="edit-nascimento"></div>
+                    </div>
+                    <div class="form-grid">
+                        <div><label>Endereço</label><input type="text" id="edit-endereco"></div>
+                        <div><label>Cidade</label><input type="text" id="edit-cidade"></div>
+                    </div>
+                </div>
+
+                <div id="edit-extras-prof" style="display:none; margin-top:15px; background:#e3f2fd; padding:10px; border-radius:5px;">
+                    <h4 style="color:#1565c0;">Dados Profissionais</h4>
+                    <div class="form-grid">
+                        <div><label>Registro Profissional</label><input type="text" id="edit-registro"></div>
+                        <div><label>Especialidade</label><input type="text" id="edit-especialidade"></div>
+                    </div>
+                    <label style="margin-top:5px; display:block;">Bio</label>
+                    <textarea id="edit-bio" rows="3" style="width:100%;"></textarea>
+                </div>
+
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </div>
             </form>
         </div>
     </div>
