@@ -1,18 +1,19 @@
 // Arquivo: assets/js/dashboard.js
 
-// Importações necessárias
+// Importações do Firebase
 import { auth, db } from '../firebase.js'; 
 import { signOut, onAuthStateChanged, getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { collection, query, where, onSnapshot, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 
-// --- 1. Verificação de Segurança (Auth Guard) ---
+// --- 1. Verificação de Acesso ---
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "index.html";
         return;
     }
 
+    // Busca dados do Líder (sem travas, apenas para exibir o nome)
     try {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
@@ -23,7 +24,7 @@ onAuthStateChanged(auth, async (user) => {
             if(nomeDisplay) nomeDisplay.innerText = data.nome || "Líder";
         }
     } catch (error) {
-        console.warn("Erro ao ler perfil:", error);
+        console.warn("Erro silencioso ao buscar nome:", error);
     }
 });
 
@@ -43,8 +44,7 @@ function carregarEquipe() {
     const listaPsi = document.getElementById('lista-psi');
     if(!listaPsi) return;
 
-    // Busca todos que NÃO são pacientes (Psicólogos e Recepcionistas)
-    // Nota: O Firestore tem limitações com "not-equal", então faremos query simples por enquanto
+    // Busca Psis
     const q = query(collection(db, "users"), where("role", "==", "psi"));
     
     onSnapshot(q, (querySnapshot) => {
@@ -77,7 +77,7 @@ function carregarEquipe() {
     });
 }
 
-// --- 4. Renderizar Salas (Mocada por enquanto) ---
+// --- 4. Renderizar Salas ---
 function renderizarSalas() {
     const container = document.getElementById('grid-salas');
     if(!container) return;
@@ -89,8 +89,10 @@ function renderizarSalas() {
     ];
 
     container.innerHTML = "";
+    let ocupadas = 0;
     
     salas.forEach(sala => {
+        if(sala.ocupada) ocupadas++;
         const card = `
             <div class="room-card ${sala.ocupada ? 'occupied' : ''}">
                 <div style="font-size: 2rem; color: var(--color-primary); margin-bottom: 10px;">
@@ -104,19 +106,27 @@ function renderizarSalas() {
         `;
         container.innerHTML += card;
     });
+
+    const contadorSalas = document.getElementById('count-salas');
+    if(contadorSalas) contadorSalas.innerText = `${ocupadas}/${salas.length}`;
 }
 
-// --- 5. CADASTRO PROFISSIONAL (SEM LOGOUT) ---
-// Aqui está a mágica: Usamos uma "Second App" para criar o usuário
+// --- 5. CADASTRO (Sem Logout / Sem Alerts) ---
 const formCadastro = document.getElementById('internalRegisterForm');
 if(formCadastro) {
     formCadastro.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Elementos de UI
         const btn = formCadastro.querySelector('button');
-        const txtOriginal = btn.innerText;
-        btn.innerText = "Criando...";
+        const errorMsg = document.getElementById('reg-error-msg');
+        const txtOriginal = "Realizar Cadastro";
+        
+        // Feedback Visual
+        btn.innerText = "Processando...";
         btn.disabled = true;
+        btn.style.opacity = "0.7";
+        errorMsg.style.display = "none";
 
         // Coleta dados
         const email = document.getElementById('reg-email').value;
@@ -130,19 +140,16 @@ if(formCadastro) {
         let secondaryApp = null;
 
         try {
-            // 1. Pega a configuração do app principal dinamicamente
+            // Inicializa App Secundário (Fantasma)
             const config = getApp().options;
-
-            // 2. Inicializa um app SECUNDÁRIO (Fantasma)
-            // Isso permite criar o usuário lá sem deslogar VOCÊ aqui
             secondaryApp = initializeApp(config, "RegistradorTemporario");
             const secondaryAuth = getAuth(secondaryApp);
 
-            // 3. Cria a conta na autenticação (no app fantasma)
+            // Cria usuário no Auth (No app fantasma)
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             const newUser = userCredential.user;
 
-            // 4. Salva os dados no Firestore usando o banco PRINCIPAL (onde você é admin e tem permissão)
+            // Salva no Banco (Com suas credenciais de Líder)
             await setDoc(doc(db, "users", newUser.uid), {
                 uid: newUser.uid,
                 nome: nome,
@@ -151,30 +158,41 @@ if(formCadastro) {
                 telefone: phone,
                 crp: role === 'psi' ? crp : null,
                 abordagem: role === 'psi' ? abordagem : null,
-                criadoPor: auth.currentUser.uid, // Rastreabilidade
+                criadoPor: auth.currentUser.uid,
                 criadoEm: serverTimestamp()
             });
 
-            // 5. Limpa tudo e avisa
-            alert(`Sucesso! Usuário ${nome} cadastrado.`);
+            // Sucesso Visual
+            btn.innerText = "Cadastrado com Sucesso!";
+            btn.style.backgroundColor = "var(--color-success)";
             formCadastro.reset();
             
-            // Se for psicólogo, esconde os campos extras
-            const areaPsi = document.getElementById('reg-psi-extras');
-            if(areaPsi) areaPsi.style.display = 'none';
+            // Volta o botão ao normal após 3 segundos
+            setTimeout(() => {
+                btn.innerText = txtOriginal;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.backgroundColor = ""; // Volta a cor original do CSS
+            }, 3000);
 
         } catch (error) {
             console.error(error);
-            let msg = error.message;
-            if(error.code === 'auth/email-already-in-use') msg = "Este e-mail já está cadastrado.";
-            alert("Erro ao cadastrar: " + msg);
+            // Erro Visual
+            btn.innerText = "Erro ao Cadastrar";
+            btn.style.backgroundColor = "#e74c3c"; // Vermelho
+            errorMsg.innerText = "Erro: " + error.code; // Mostra código técnico discretamente
+            errorMsg.style.display = "block";
+            
+            setTimeout(() => {
+                btn.innerText = txtOriginal;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.backgroundColor = "";
+            }, 3000);
         } finally {
-            // 6. Destrói o app fantasma para liberar memória
             if (secondaryApp) {
                 await deleteApp(secondaryApp);
             }
-            btn.innerText = txtOriginal;
-            btn.disabled = false;
         }
     });
 }
