@@ -2,7 +2,7 @@
 
 // Importações
 // Note o "../" para subir da pasta "js" para a pasta "assets"
-import { auth, db } from './assets/firebase.js'; 
+import { auth, db } from './firebase.js'; 
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
