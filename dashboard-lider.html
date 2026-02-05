@@ -25,7 +25,7 @@
                 <i class="fas fa-calendar-alt"></i> Agenda Clínica
             </div>
             <div class="nav-item" onclick="mostrarSecao('sec-equipe', this)">
-                <i class="fas fa-user-md"></i> Equipe Ativa
+                <i class="fas fa-user-md"></i> Equipe Multidisciplinar
             </div>
             <div class="nav-item" onclick="mostrarSecao('sec-pacientes', this)">
                 <i class="fas fa-users"></i> Pacientes
@@ -49,11 +49,10 @@
             <section id="sec-home" class="content-section active">
                 <h2>Olá, <span id="adminName">...</span>!</h2>
                 <p>Resumo da clínica.</p>
-                
                 <div class="form-grid" style="margin-top: 20px;">
                     <div class="card text-center">
-                        <h3><i class="fas fa-user-md"></i> Psicólogos</h3>
-                        <h1 id="count-psi">-</h1>
+                        <h3><i class="fas fa-user-md"></i> Equipe</h3>
+                        <h1 id="count-equipe">-</h1>
                     </div>
                     <div class="card text-center">
                         <h3><i class="fas fa-users"></i> Pacientes</h3>
@@ -68,40 +67,40 @@
 
             <section id="sec-equipe" class="content-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>Gerenciamento de Equipe</h2>
+                    <h2>Equipe Multidisciplinar</h2>
                     <button class="btn-secondary" onclick="mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[5])">
-                        + Adicionar Novo Membro
+                        + Novo Profissional
                     </button>
                 </div>
 
                 <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
                     <div style="background: var(--color-primary); color: white; padding: 15px; font-weight: bold;">
-                        <i class="fas fa-user-md"></i> Psicólogos
+                        <i class="fas fa-stethoscope"></i> Corpo Clínico (Psis, Médicos, Nutris...)
                     </div>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Status</th>
-                                <th>Nome</th>
-                                <th>CRP</th>
-                                <th>Abordagem</th>
+                                <th>Profissional</th>
+                                <th>Especialidade/Cargo</th>
+                                <th>Registro (Conselho)</th>
                                 <th style="text-align: right;">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-psi"></tbody>
+                        <tbody id="lista-equipe"></tbody>
                     </table>
                 </div>
 
                 <div class="card" style="padding: 0; overflow: hidden;">
                     <div style="background: #546E7A; color: white; padding: 15px; font-weight: bold;">
-                        <i class="fas fa-concierge-bell"></i> Recepção & Staff
+                        <i class="fas fa-concierge-bell"></i> Recepção & Administrativo
                     </div>
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Status</th>
                                 <th>Nome</th>
-                                <th>Email/Contato</th>
+                                <th>Contato</th>
                                 <th style="text-align: right;">Ações</th>
                             </tr>
                         </thead>
@@ -124,7 +123,6 @@
                         <i class="fas fa-user-plus"></i> Novo Paciente
                     </button>
                 </div>
-                
                 <div class="card" style="padding:0; overflow:hidden;">
                     <table class="data-table">
                         <thead>
@@ -151,130 +149,113 @@
                 <div class="card" style="max-width: 900px;">
                     <form id="internalRegisterForm">
                         <div style="margin-bottom: 1rem; background: #eee; padding: 10px; border-radius: 5px;">
-                            <label><strong>1. Selecione o Tipo de Conta:</strong></label>
-                            <select id="reg-role" required style="width: 100%; padding: 8px; margin-top: 5px;">
-                                <option value="paciente">Paciente (Prontuário)</option>
-                                <option value="psi">Psicólogo (Equipe)</option>
-                                <option value="recep">Recepcionista (Staff)</option>
+                            <label><strong>Selecione o Perfil:</strong></label>
+                            <select id="reg-role" required style="width: 100%; padding: 8px; margin-top: 5px; font-weight: bold;">
+                                <optgroup label="Pacientes">
+                                    <option value="paciente">Paciente (Prontuário)</option>
+                                </optgroup>
+                                <optgroup label="Corpo Clínico">
+                                    <option value="psi">Psicólogo(a)</option>
+                                    <option value="psiquiatra">Psiquiatra</option>
+                                    <option value="nutri">Nutricionista</option>
+                                    <option value="feno">Fonoaudiólogo(a)</option>
+                                    <option value="fisio">Fisioterapeuta</option>
+                                    <option value="educador">Educador Físico</option>
+                                    <option value="outro_saude">Outra Área da Saúde</option>
+                                </optgroup>
+                                <optgroup label="Administrativo">
+                                    <option value="recep">Recepcionista</option>
+                                    <option value="admin">Administrador/Líder</option>
+                                </optgroup>
                             </select>
                         </div>
                         
                         <div class="form-grid">
-                            <div><label>Nome Completo *</label><input type="text" id="reg-name" required placeholder="Nome igual ao documento"></div>
-                            <div><label>E-mail (Login) *</label><input type="email" id="reg-email" required placeholder="email@exemplo.com"></div>
+                            <div><label>Nome Completo *</label><input type="text" id="reg-name" required></div>
+                            <div><label>E-mail (Login) *</label><input type="email" id="reg-email" required></div>
                         </div>
-
                         <div class="form-grid">
                             <div><label>Senha Inicial *</label><input type="password" id="reg-pass" required></div>
-                            <div><label>Celular (WhatsApp) *</label><input type="tel" id="reg-phone" placeholder="(00) 00000-0000"></div>
+                            <div><label>Celular (WhatsApp) *</label><input type="tel" id="reg-phone"></div>
                         </div>
 
-                        <div id="reg-psi-extras" style="display:none; background:#f0f8ff; padding:15px; border-radius:8px; margin-top: 15px;">
-                            <h4 style="margin-bottom:10px; color: var(--color-primary);"><i class="fas fa-user-md"></i> Dados Profissionais</h4>
-                            <div class="form-grid">
-                                <div><label>CRP</label><input type="text" id="reg-crp"></div>
-                                <div><label>Abordagem</label><input type="text" id="reg-abordagem"></div>
-                            </div>
-                        </div>
-
-                        <div id="reg-paciente-extras" style="display:block; margin-top: 15px;">
+                        <div id="reg-prof-extras" style="display:none; margin-top: 15px;">
                             
-                            <div style="background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                                <h4 style="margin-bottom:10px; color: #00695c;"><i class="fas fa-id-card"></i> 1. Informações Pessoais</h4>
+                            <div style="background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                                <h4 style="margin-bottom:10px; color: #1565c0;"><i class="fas fa-id-badge"></i> Dados Profissionais</h4>
                                 <div class="form-grid">
-                                    <div><label>CPF</label><input type="text" id="reg-cpf" placeholder="000.000.000-00"></div>
-                                    <div><label>RG</label><input type="text" id="reg-rg"></div>
-                                    <div><label>Data de Nascimento</label><input type="date" id="reg-nascimento"></div>
+                                    <div>
+                                        <label id="lbl-registro">Registro Profissional (CRP/CRM...)</label>
+                                        <input type="text" id="reg-registro-prof">
+                                    </div>
+                                    <div><label>Abordagem / Especialidade</label><input type="text" id="reg-especialidade" placeholder="Ex: TCC, Nutrição Esportiva..."></div>
                                 </div>
                                 <div class="form-grid">
                                     <div>
-                                        <label>Gênero</label>
-                                        <select id="reg-genero" style="width: 100%; padding: 10px;">
-                                            <option value="">--Selecione--</option>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Feminino">Feminino</option>
-                                            <option value="Outro">Outro</option>
+                                        <label>Tipo de Atendimento</label>
+                                        <select id="reg-tipo-atend">
+                                            <option value="Hibrido">Presencial e Online</option>
+                                            <option value="Presencial">Apenas Presencial</option>
+                                            <option value="Online">Apenas Online</option>
                                         </select>
                                     </div>
-                                    <div><label>Naturalidade</label><input type="text" id="reg-naturalidade"></div>
-                                    <div><label>Profissão</label><input type="text" id="reg-profissao"></div>
-                                </div>
-                                <div class="form-grid">
-                                    <div><label>Escolaridade</label><input type="text" id="reg-escolaridade"></div>
-                                    <div><label>Nome Social (se houver)</label><input type="text" id="reg-nome-social"></div>
+                                    <div><label>Valor da Sessão (R$)</label><input type="text" id="reg-valor"></div>
                                 </div>
                             </div>
 
                             <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                                <h4 style="margin-bottom:10px; color: #e65100;"><i class="fas fa-map-marker-alt"></i> 2. Endereço</h4>
+                                <h4 style="margin-bottom:10px; color: #e65100;"><i class="fas fa-bullhorn"></i> Perfil Público (Marketing)</h4>
+                                <div>
+                                    <label>Sobre mim (Bio)</label>
+                                    <textarea id="reg-bio" rows="4" placeholder="Minha jornada na Psicologia nasceu..." style="width:100%; padding:10px;"></textarea>
+                                </div>
+                                <div style="margin-top:10px;">
+                                    <label>Formação e Currículo</label>
+                                    <textarea id="reg-formacao" rows="3" placeholder="Graduação, Pós-graduação..." style="width:100%; padding:10px;"></textarea>
+                                </div>
+                            </div>
+
+                            <div style="background:#f3e5f5; padding:15px; border-radius:8px;">
+                                <h4 style="margin-bottom:10px; color: #6a1b9a;"><i class="fas fa-map-marked-alt"></i> Endereço de Atendimento</h4>
                                 <div class="form-grid">
-                                    <div><label>CEP</label><input type="text" id="reg-cep"></div>
-                                    <div style="grid-column: span 2;"><label>Endereço</label><input type="text" id="reg-endereco"></div>
+                                    <div><label>CEP</label><input type="text" id="reg-prof-cep"></div>
+                                    <div><label>Cidade/UF</label><input type="text" id="reg-prof-cidade"></div>
                                 </div>
                                 <div class="form-grid">
-                                    <div><label>Número</label><input type="text" id="reg-numero"></div>
-                                    <div><label>Bairro</label><input type="text" id="reg-bairro"></div>
+                                    <div style="grid-column: span 2;"><label>Endereço e Número</label><input type="text" id="reg-prof-endereco"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="reg-paciente-extras" style="display:none; margin-top: 15px;">
+                            <div style="background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                                <h4 style="color: #00695c;"><i class="fas fa-user-circle"></i> Dados Pessoais</h4>
+                                <div class="form-grid">
+                                    <div><label>CPF</label><input type="text" id="reg-cpf"></div>
+                                    <div><label>Data Nascimento</label><input type="date" id="reg-nascimento"></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div><label>Endereço</label><input type="text" id="reg-endereco"></div>
                                     <div><label>Cidade</label><input type="text" id="reg-cidade"></div>
                                 </div>
                             </div>
-
-                            <div style="background:#f3e5f5; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                                <h4 style="margin-bottom:10px; color: #6a1b9a;"><i class="fas fa-user-shield"></i> 3. Responsável / Emergência</h4>
+                            <div style="background:#ffebee; padding:15px; border-radius:8px;">
+                                <h4 style="color: #c62828;"><i class="fas fa-heartbeat"></i> Responsável / Emergência</h4>
                                 <div class="form-grid">
-                                    <div style="grid-column: span 2;"><label>Nome do Responsável/Parente</label><input type="text" id="reg-resp-nome"></div>
-                                    <div><label>Parentesco</label><input type="text" id="reg-resp-parentesco"></div>
-                                </div>
-                                <div class="form-grid">
-                                    <div><label>Telefone/Celular do Responsável</label><input type="text" id="reg-resp-tel"></div>
-                                    <div><label>CPF do Responsável</label><input type="text" id="reg-resp-cpf"></div>
+                                    <div><label>Nome Responsável</label><input type="text" id="reg-resp-nome"></div>
+                                    <div><label>Telefone</label><input type="text" id="reg-resp-tel"></div>
                                 </div>
                             </div>
-
-                            <div>
-                                <label>Observações Gerais</label>
-                                <textarea id="reg-obs" rows="3" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
-                            </div>
-
                         </div>
 
                         <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.1rem;">
-                            <i class="fas fa-save"></i> Salvar Cadastro Completo
+                            <i class="fas fa-save"></i> Finalizar Cadastro
                         </button>
-                        <p id="reg-error-msg" style="color: red; font-size: 0.9rem; margin-top: 10px; display: none;"></p>
                     </form>
                 </div>
             </section>
 
         </main>
-    </div>
-
-    <div id="modal-editar" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3>Editar Usuário</h3>
-                <button onclick="fecharModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            </div>
-            <form id="form-editar">
-                <input type="hidden" id="edit-uid"> 
-                <input type="hidden" id="edit-role"> 
-                <div class="form-grid">
-                    <div><label>Nome</label><input type="text" id="edit-nome" required></div>
-                    <div><label>Telefone</label><input type="text" id="edit-telefone"></div>
-                </div>
-                <div id="edit-extras-psi" style="display: none;">
-                    <div class="form-grid">
-                        <div><label>CRP</label><input type="text" id="edit-crp"></div>
-                        <div><label>Abordagem</label><input type="text" id="edit-abordagem"></div>
-                    </div>
-                </div>
-                <div id="edit-extras-paciente" style="display: none; margin-top:10px;">
-                    <div><label>CPF</label><input type="text" id="edit-cpf" style="width:100%"></div>
-                    </div>
-                <div style="margin-top: 20px; text-align: right;">
-                    <button type="submit" class="btn-primary">Salvar</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <div id="modal-agenda" class="modal-overlay" style="display: none;">
@@ -300,20 +281,33 @@
                     </select>
                 </div>
                 <div class="form-grid">
-                    <div><label>Psicólogo</label><select id="evt-psi" required><option value="">Carregando...</option></select></div>
+                    <div><label>Profissional</label><select id="evt-psi" required><option value="">Carregando...</option></select></div>
                     <div><label>Paciente</label><select id="evt-paciente" required><option value="">Carregando...</option></select></div>
                 </div>
                 <div style="margin-top: 15px;">
                     <label>Tipo</label>
                     <input type="text" id="evt-tipo" list="tipos-sessao">
                     <datalist id="tipos-sessao">
-                        <option value="Terapia Individual"><option value="Avaliação"><option value="Terapia de Casal">
+                        <option value="Terapia Individual"><option value="Consulta"><option value="Avaliação">
                     </datalist>
                 </div>
                 <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" id="btn-excluir-evento" class="btn-secondary" style="color: #e74c3c; display: none;" onclick="excluirAgendamento()"><i class="fas fa-trash"></i></button>
                     <button type="submit" class="btn-primary">Confirmar</button>
                 </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modal-editar" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3>Editar Dados</h3>
+            <form id="form-editar">
+                <input type="hidden" id="edit-uid"><input type="hidden" id="edit-role">
+                <label>Nome</label><input type="text" id="edit-nome" style="width:100%; margin-bottom:10px;">
+                <label>Telefone</label><input type="text" id="edit-telefone" style="width:100%; margin-bottom:10px;">
+                <button type="submit" class="btn-primary">Salvar</button>
+                <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
             </form>
         </div>
     </div>
