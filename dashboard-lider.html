@@ -6,6 +6,7 @@
     <title>Painel do Líder - BS Psicologia</title>
     <link rel="stylesheet" href="./assets/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 </head>
 <body>
 
@@ -19,6 +20,9 @@
             
             <div class="nav-item active" onclick="mostrarSecao('sec-home', this)">
                 <i class="fas fa-chart-pie"></i> Visão Geral
+            </div>
+            <div class="nav-item" onclick="mostrarSecao('sec-agenda', this)">
+                <i class="fas fa-calendar-alt"></i> Agenda Clínica
             </div>
             <div class="nav-item" onclick="mostrarSecao('sec-equipe', this)">
                 <i class="fas fa-user-md"></i> Equipe Ativa
@@ -104,7 +108,12 @@
                     </table>
                 </div>
             </section>
-
+            <section id="sec-agenda" class="content-section">
+                <h2>Agenda de Consultas</h2>
+                <div class="card">
+                    <div id='calendar'></div>
+                </div>
+            </section>
             <section id="sec-salas" class="content-section">
                 <h2>Gerenciamento de Salas</h2>
                 <div class="room-grid" id="grid-salas">
@@ -185,6 +194,59 @@
                 <div style="margin-top: 20px; text-align: right;">
                     <button type="button" onclick="fecharModal()" class="btn-secondary" style="margin-right: 10px;">Cancelar</button>
                     <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="modal-agenda" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3><i class="fas fa-calendar-plus"></i> Novo Agendamento</h3>
+                <button onclick="fecharModalAgenda()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            
+            <form id="form-agenda">
+                <input type="hidden" id="event-id">
+
+                <div class="form-grid">
+                    <div>
+                        <label>Data</label>
+                        <input type="date" id="evt-data" required>
+                    </div>
+                    <div>
+                        <label>Horário</label>
+                        <input type="time" id="evt-hora" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <label>Psicólogo</label>
+                        <select id="evt-psi" required>
+                            <option value="">Carregando...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Paciente</label>
+                        <input type="text" id="evt-paciente" placeholder="Nome do Paciente" required>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <label>Tipo de Sessão</label>
+                    <select id="evt-tipo">
+                        <option value="Terapia Individual">Terapia Individual</option>
+                        <option value="Terapia de Casal">Terapia de Casal</option>
+                        <option value="Avaliação">Avaliação Inicial</option>
+                        <option value="Online">Sessão Online</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="btn-excluir-evento" class="btn-secondary" style="color: #e74c3c; border-color: #e74c3c; display: none;" onclick="excluirAgendamento()">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                    <button type="submit" class="btn-primary">Salvar Agendamento</button>
                 </div>
             </form>
         </div>
