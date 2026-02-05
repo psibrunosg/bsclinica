@@ -399,3 +399,129 @@ input:focus {
     background-color: var(--color-primary) !important;
     border-color: var(--color-primary) !important;
 }
+/* --- ADICIONE ISSO AO SEU CSS EXISTENTE --- */
+
+/* Estilo para os botões de Alternância (Individual/Grupo) */
+.toggle-group {
+    display: flex;
+    background: #f1f2f6;
+    border-radius: 6px;
+    padding: 4px;
+    margin-bottom: 20px;
+}
+.toggle-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #7f8c8d;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+.toggle-btn.active {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Estilo do POPOVER (A caixinha pequena de detalhes) */
+.event-popover {
+    position: fixed; /* Ou absolute se calculado via JS */
+    z-index: 2000;
+    background: white;
+    width: 320px;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    display: none; /* Escondido por padrão */
+    animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.popover-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.popover-header i {
+    color: #95a5a6;
+    cursor: pointer;
+    margin-left: 15px;
+    font-size: 1.1rem;
+}
+.popover-header i:hover { color: var(--color-primary); }
+
+.popover-body {
+    padding: 20px;
+}
+
+.popover-color-tag {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.popover-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.popover-tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.pop-tag {
+    background: #e8eaf6;
+    color: #3f51b5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.popover-info {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.popover-status-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
+    margin-top: 15px;
+    background: #fff;
+    color: #d35400; /* Cor de ausente padrão */
+    font-weight: 600;
+}
+
+.popover-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.btn-icon-small {
+    border: 1px solid #ddd;
+    background: white;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #555;
+}
