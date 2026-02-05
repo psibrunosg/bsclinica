@@ -373,3 +373,29 @@ input:focus {
     from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* --- AGENDA --- */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 700px; /* Garante altura boa */
+    font-family: var(--font-body);
+}
+
+/* Estiliza os eventos do calendário */
+.fc-event {
+    cursor: pointer;
+    border: none !important;
+    padding: 2px 5px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.fc-toolbar-title {
+    font-size: 1.2rem !important;
+    color: var(--color-primary);
+}
+
+.fc-button-primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
