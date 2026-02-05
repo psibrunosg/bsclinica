@@ -3,17 +3,14 @@
 // 1. IMPORTAÇÕES
 import { auth, db } from '../firebase.js'; 
 import { signOut, onAuthStateChanged, getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-auth.js";
-import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, updateDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
 
-let calendar; // Variável global do calendário
+let calendar; 
 
 // 2. AUTH GUARD
 onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = "index.html";
-        return;
-    }
+    if (!user) { window.location.href = "index.html"; return; }
     try {
         const docSnap = await getDoc(doc(db, "users", user.uid));
         if (docSnap.exists()) {
@@ -30,34 +27,30 @@ window.mostrarSecao = function(idSecao, elementoMenu) {
     document.getElementById(idSecao).classList.add('active');
     if(elementoMenu) elementoMenu.classList.add('active');
     
-    // Se abrir a agenda, renderiza o calendário
     if (idSecao === 'sec-agenda' && calendar) {
         setTimeout(() => { calendar.render(); }, 100); 
     }
 }
 
 window.abrirCadastroPaciente = function() {
-    // Abre a aba de cadastro e foca em Paciente
-    mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[5]); // Ajuste o index se precisar
-    document.getElementById('reg-role').value = 'paciente';
-    document.getElementById('reg-role').dispatchEvent(new Event('change')); // Dispara o evento visual
+    mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[5]); 
+    const roleSelect = document.getElementById('reg-role');
+    roleSelect.value = 'paciente';
+    roleSelect.dispatchEvent(new Event('change')); // Força atualização visual dos campos
 }
 
-
-// 4. CARREGAMENTO DE DADOS (Equipe e Pacientes)
+// 4. CARREGAMENTO DE DADOS
 function carregarListas() {
-    // A) LISTA DE PSICÓLOGOS (Para Tabela e Select da Agenda)
+    // Lista de Psis
     const qPsi = query(collection(db, "users"), where("role", "==", "psi"));
     onSnapshot(qPsi, (snap) => {
         const listaPsi = document.getElementById('lista-psi');
         const selectPsi = document.getElementById('evt-psi');
-        
         if(listaPsi) listaPsi.innerHTML = "";
         if(selectPsi) selectPsi.innerHTML = '<option value="">Selecione...</option>';
 
         snap.forEach((doc) => {
             const d = doc.data();
-            // Preenche Tabela
             if(listaPsi) {
                 listaPsi.innerHTML += `
                     <tr>
@@ -66,49 +59,46 @@ function carregarListas() {
                         <td>${d.crp || '-'}</td>
                         <td>${d.abordagem || '-'}</td>
                         <td style="text-align:right;">
+                            <button onclick="abrirEditor('${doc.id}')" style="color:#2980b9; border:none; background:none; cursor:pointer;"><i class="fas fa-edit"></i></button>
                             <button onclick="excluirUsuario('${doc.id}', '${d.nome}')" style="color:#e74c3c; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             }
-            // Preenche Select da Agenda
             if(selectPsi) {
                 const opt = document.createElement('option');
-                opt.value = doc.id; // Salvamos o ID do doc, não o UID as vezes
-                opt.text = d.nome;
+                opt.value = doc.id; opt.text = d.nome;
                 selectPsi.appendChild(opt);
             }
         });
         document.getElementById('count-psi').innerText = snap.size;
     });
 
-    // B) LISTA DE PACIENTES (Para Tabela Nova e Select da Agenda)
+    // Lista de Pacientes (COM NOVOS DADOS)
     const qPacientes = query(collection(db, "users"), where("role", "==", "paciente"));
     onSnapshot(qPacientes, (snap) => {
         const listaPac = document.getElementById('lista-pacientes');
         const selectPac = document.getElementById('evt-paciente');
-        
         if(listaPac) listaPac.innerHTML = "";
-        if(selectPac) selectPac.innerHTML = '<option value="">Selecione o Paciente...</option>';
+        if(selectPac) selectPac.innerHTML = '<option value="">Selecione...</option>';
 
         snap.forEach((doc) => {
             const d = doc.data();
-            // Tabela
             if(listaPac) {
                 listaPac.innerHTML += `
                     <tr>
                         <td><strong>${d.nome}</strong></td>
                         <td>${d.email}</td>
                         <td>${d.telefone || '-'}</td>
+                        <td>${d.cpf || '-'}</td>
                         <td style="text-align:right;">
+                             <button onclick="abrirEditor('${doc.id}')" style="color:#2980b9; border:none; background:none; cursor:pointer;"><i class="fas fa-edit"></i></button>
                              <button onclick="excluirUsuario('${doc.id}', '${d.nome}')" style="color:#e74c3c; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             }
-            // Select Agenda
             if(selectPac) {
                 const opt = document.createElement('option');
-                opt.value = d.nome; // Salvamos o Nome para aparecer no card, ou ID se preferir
-                opt.text = d.nome;
+                opt.value = d.nome; opt.text = d.nome;
                 selectPac.appendChild(opt);
             }
         });
@@ -116,93 +106,63 @@ function carregarListas() {
     });
 }
 
-
-// 5. AGENDA (Lógica Corrigida)
+// 5. AGENDA
 function inicializarAgenda() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
 
     calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek', // Visão semanal é melhor para clínicas
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        locale: 'pt-br',
-        slotMinTime: "07:00:00",
-        slotMaxTime: "22:00:00",
-        allDaySlot: false,
-        selectable: true,
-        editable: true, // Permite arrastar
+        initialView: 'timeGridWeek',
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+        locale: 'pt-br', slotMinTime: "07:00:00", slotMaxTime: "22:00:00", allDaySlot: false,
+        selectable: true, editable: true,
 
-        // Ao clicar no calendário vazio
         dateClick: function(info) {
-            // Se for visão de mês, data vem sem hora. Se for semana, vem com hora.
             let dataStr = info.dateStr.split('T')[0];
             let horaStr = info.dateStr.includes('T') ? info.dateStr.split('T')[1].substring(0,5) : "08:00";
             abrirModalAgenda(null, dataStr, horaStr);
         },
-
-        // Ao clicar num evento
-        eventClick: function(info) {
-            abrirModalAgenda(info.event);
-        },
-        
-        // Ao arrastar evento (Drop) -> Atualiza no banco
+        eventClick: function(info) { abrirModalAgenda(info.event); },
         eventDrop: async function(info) {
-            if(!confirm("Mover agendamento para " + info.event.start.toLocaleString() + "?")) {
-                info.revert();
-            } else {
-                // Atualiza data/hora no Firestore
+            if(confirm("Mover para " + info.event.start.toLocaleString() + "?")) {
                 const novaData = info.event.start.toISOString().split('T')[0];
                 const novaHora = info.event.start.toTimeString().substring(0,5);
-                await updateDoc(doc(db, "agendamentos", info.event.id), {
-                    data: novaData,
-                    hora: novaHora
-                });
-            }
+                await updateDoc(doc(db, "agendamentos", info.event.id), { data: novaData, hora: novaHora });
+            } else { info.revert(); }
         }
     });
 
     calendar.render();
 
-    // --- SINCRONIZAÇÃO EM TEMPO REAL (A CORREÇÃO DO "NÃO APARECE") ---
-    // Em vez de usar 'events: function', usamos um listener externo
-    const qAgenda = query(collection(db, "agendamentos"));
-    onSnapshot(qAgenda, (snapshot) => {
-        calendar.removeAllEvents(); // Limpa tudo
-        
+    // Sincronização Realtime
+    onSnapshot(query(collection(db, "agendamentos")), (snapshot) => {
+        calendar.removeAllEvents();
         const eventos = snapshot.docs.map(doc => {
             const d = doc.data();
             return {
                 id: doc.id,
-                title: `${d.paciente} (${d.psiNome})`, // Título do Card
-                start: `${d.data}T${d.hora}`, // Formato ISO
-                backgroundColor: definirCorPorSala(d.sala), // COR DA SALA
+                title: `${d.paciente} (${d.psiNome})`,
+                start: `${d.data}T${d.hora}`,
+                backgroundColor: definirCorPorSala(d.sala),
                 borderColor: definirCorPorSala(d.sala),
-                extendedProps: { ...d } // Guarda tudo pra edição
+                extendedProps: { ...d }
             };
         });
-        
-        calendar.addEventSource(eventos); // Adiciona os novos
+        calendar.addEventSource(eventos);
     });
 }
 
-// CORES POR SALA
 function definirCorPorSala(sala) {
     switch (sala) {
-        case 'Sala 01': return '#3498db'; // Azul
-        case 'Sala 02': return '#27ae60'; // Verde
-        case 'Sala 03': return '#e67e22'; // Laranja
-        case 'Sala 04': return '#9b59b6'; // Roxo
-        case 'Sala 05': return '#7f8c8d'; // Cinza
-        default: return '#2c3e50';
+        case 'Sala 01': return '#3498db'; 
+        case 'Sala 02': return '#27ae60'; 
+        case 'Sala 03': return '#e67e22'; 
+        case 'Sala 04': return '#9b59b6'; 
+        default: return '#7f8c8d'; 
     }
 }
 
-
-// 6. MODAL DA AGENDA
+// 6. MODAL AGENDA
 window.abrirModalAgenda = function(evento, dataStr, horaStr) {
     const modal = document.getElementById('modal-agenda');
     const form = document.getElementById('form-agenda');
@@ -210,23 +170,18 @@ window.abrirModalAgenda = function(evento, dataStr, horaStr) {
     modal.style.display = 'flex';
 
     if(evento) {
-        // Edição
         const props = evento.extendedProps;
         document.getElementById('event-id').value = evento.id;
         document.getElementById('evt-data').value = props.data;
         document.getElementById('evt-hora').value = props.hora;
         document.getElementById('evt-sala').value = props.sala || "Sala 01";
         document.getElementById('evt-tipo').value = props.tipo;
-        
-        // Seta os Selects (delay pequeno pra garantir que carregou)
         setTimeout(() => {
             document.getElementById('evt-psi').value = props.psiId;
             document.getElementById('evt-paciente').value = props.paciente; 
         }, 100);
-
         document.getElementById('btn-excluir-evento').style.display = 'block';
     } else {
-        // Novo
         document.getElementById('event-id').value = "";
         document.getElementById('evt-data').value = dataStr;
         document.getElementById('evt-hora').value = horaStr;
@@ -234,19 +189,14 @@ window.abrirModalAgenda = function(evento, dataStr, horaStr) {
     }
 }
 
-window.fecharModalAgenda = function() {
-    document.getElementById('modal-agenda').style.display = 'none';
-}
+window.fecharModalAgenda = function() { document.getElementById('modal-agenda').style.display = 'none'; }
 
-// Salvar Agendamento
 document.getElementById('form-agenda').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.innerText = "Salvando...";
-
     const id = document.getElementById('event-id').value;
     const selectPsi = document.getElementById('evt-psi');
-    
     const dados = {
         data: document.getElementById('evt-data').value,
         hora: document.getElementById('evt-hora').value,
@@ -254,57 +204,41 @@ document.getElementById('form-agenda').addEventListener('submit', async (e) => {
         tipo: document.getElementById('evt-tipo').value,
         psiId: selectPsi.value,
         psiNome: selectPsi.options[selectPsi.selectedIndex].text,
-        paciente: document.getElementById('evt-paciente').value // Pega o nome do select
+        paciente: document.getElementById('evt-paciente').value
     };
-
     try {
-        if(id) {
-            await updateDoc(doc(db, "agendamentos", id), dados);
-        } else {
-            await setDoc(doc(collection(db, "agendamentos")), dados);
-        }
+        if(id) await updateDoc(doc(db, "agendamentos", id), dados);
+        else await setDoc(doc(collection(db, "agendamentos")), dados);
         fecharModalAgenda();
-        // Não precisa alert, o calendário atualiza visualmente sozinho
-    } catch (err) {
-        alert("Erro: " + err.message);
-    } finally {
-        btn.innerText = "Confirmar Agenda";
-    }
+    } catch (err) { alert("Erro: " + err.message); } 
+    finally { btn.innerText = "Confirmar"; }
 });
 
 window.excluirAgendamento = async function() {
     const id = document.getElementById('event-id').value;
-    if(confirm("Excluir este agendamento?")) {
+    if(confirm("Excluir?")) {
         await deleteDoc(doc(db, "agendamentos", id));
         fecharModalAgenda();
     }
 }
 
-
-// 7. FUNÇÃO DE EXCLUIR USUÁRIO (Genérica)
+// 7. FUNÇÕES CADASTRO E EDIÇÃO
 window.excluirUsuario = async function(uid, nome) {
-    if(confirm(`Remover ${nome} do sistema?`)) {
-        await deleteDoc(doc(db, "users", uid));
-    }
+    if(confirm(`Remover ${nome}?`)) await deleteDoc(doc(db, "users", uid));
 }
 
-// 8. CADASTRO DE USUÁRIOS (Staff e Pacientes)
 const formCadastro = document.getElementById('internalRegisterForm');
 if(formCadastro) {
     formCadastro.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = formCadastro.querySelector('button');
         const txtOriginal = btn.innerText;
-        btn.innerText = "Salvando...";
-        btn.disabled = true;
+        btn.innerText = "Salvando..."; btn.disabled = true;
 
         const email = document.getElementById('reg-email').value;
         const pass = document.getElementById('reg-pass').value;
-        const nome = document.getElementById('reg-name').value;
         const role = document.getElementById('reg-role').value;
-        const phone = document.getElementById('reg-phone').value;
-        const crp = document.getElementById('reg-crp')?.value || "";
-
+        
         let secondaryApp = null;
         try {
             const config = getApp().options;
@@ -312,35 +246,54 @@ if(formCadastro) {
             const secondaryAuth = getAuth(secondaryApp);
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             
-            await setDoc(doc(db, "users", userCredential.user.uid), {
+            // DADOS GERAIS
+            const userData = {
                 uid: userCredential.user.uid,
-                nome: nome,
+                nome: document.getElementById('reg-name').value,
                 email: email,
                 role: role,
-                telefone: phone,
-                crp: role === 'psi' ? crp : null,
+                telefone: document.getElementById('reg-phone').value,
                 criadoEm: serverTimestamp()
-            });
+            };
 
+            // DADOS ESPECÍFICOS
+            if(role === 'psi') {
+                userData.crp = document.getElementById('reg-crp').value;
+                userData.abordagem = document.getElementById('reg-abordagem').value;
+            } else if (role === 'paciente') {
+                userData.cpf = document.getElementById('reg-cpf').value;
+                userData.rg = document.getElementById('reg-rg').value;
+                userData.nascimento = document.getElementById('reg-nascimento').value;
+                userData.genero = document.getElementById('reg-genero').value;
+                userData.endereco = document.getElementById('reg-endereco').value;
+                userData.numero = document.getElementById('reg-numero').value;
+                userData.bairro = document.getElementById('reg-bairro').value;
+                userData.cidade = document.getElementById('reg-cidade').value;
+            }
+
+            await setDoc(doc(db, "users", userCredential.user.uid), userData);
             alert("Cadastro realizado!");
             formCadastro.reset();
-        } catch (err) {
-            alert("Erro: " + err.message);
-        } finally {
-            if(secondaryApp) await deleteApp(secondaryApp);
-            btn.innerText = txtOriginal;
-            btn.disabled = false;
-        }
+        } catch (err) { alert("Erro: " + err.message); } 
+        finally { if(secondaryApp) await deleteApp(secondaryApp); btn.innerText = txtOriginal; btn.disabled = false; }
     });
 }
 
-// Controle UI do Form de Cadastro
+// Controle UI Cadastro (Esconde/Mostra Campos)
 const selectRole = document.getElementById('reg-role');
 if(selectRole) {
     selectRole.addEventListener('change', function() {
         const areaPsi = document.getElementById('reg-psi-extras');
-        if(areaPsi) this.value === 'psi' ? areaPsi.style.display = 'block' : areaPsi.style.display = 'none';
+        const areaPac = document.getElementById('reg-paciente-extras');
+        
+        areaPsi.style.display = 'none';
+        areaPac.style.display = 'none';
+
+        if(this.value === 'psi') areaPsi.style.display = 'block';
+        if(this.value === 'paciente') areaPac.style.display = 'block';
     });
+    // Inicia mostrando o correto
+    selectRole.dispatchEvent(new Event('change'));
 }
 
 // LOGOUT
@@ -348,6 +301,46 @@ document.getElementById('btnLogout').addEventListener('click', () => {
     signOut(auth).then(() => { window.location.href = "index.html"; });
 });
 
+// EDITOR (MODAL)
+window.abrirEditor = async function(uid) {
+    document.getElementById('modal-editar').style.display = 'flex';
+    const docSnap = await getDoc(doc(db, "users", uid));
+    if(docSnap.exists()) {
+        const d = docSnap.data();
+        document.getElementById('edit-uid').value = uid;
+        document.getElementById('edit-role').value = d.role;
+        document.getElementById('edit-nome').value = d.nome;
+        document.getElementById('edit-telefone').value = d.telefone || '';
+        
+        // Exibir extras se necessário
+        if(d.role === 'psi') {
+            document.getElementById('edit-extras-psi').style.display = 'block';
+            document.getElementById('edit-crp').value = d.crp || '';
+        } else if (d.role === 'paciente') {
+            document.getElementById('edit-extras-paciente').style.display = 'block';
+            document.getElementById('edit-cpf').value = d.cpf || '';
+        }
+    }
+}
+window.fecharModal = function() { document.getElementById('modal-editar').style.display = 'none'; }
+
+document.getElementById('form-editar').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const uid = document.getElementById('edit-uid').value;
+    const role = document.getElementById('edit-role').value;
+    const dados = {
+        nome: document.getElementById('edit-nome').value,
+        telefone: document.getElementById('edit-telefone').value
+    };
+    if(role === 'psi') {
+        dados.crp = document.getElementById('edit-crp').value;
+    } else if (role === 'paciente') {
+        dados.cpf = document.getElementById('edit-cpf').value;
+    }
+    await updateDoc(doc(db, "users", uid), dados);
+    alert("Atualizado!");
+    fecharModal();
+});
 
 // INICIALIZAÇÃO
 document.addEventListener("DOMContentLoaded", () => {
