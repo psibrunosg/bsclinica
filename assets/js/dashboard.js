@@ -36,7 +36,7 @@ window.abrirCadastroPaciente = function() {
     mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[5]); 
     const roleSelect = document.getElementById('reg-role');
     roleSelect.value = 'paciente';
-    roleSelect.dispatchEvent(new Event('change')); // Força atualização visual dos campos
+    roleSelect.dispatchEvent(new Event('change')); 
 }
 
 // 4. CARREGAMENTO DE DADOS
@@ -73,7 +73,7 @@ function carregarListas() {
         document.getElementById('count-psi').innerText = snap.size;
     });
 
-    // Lista de Pacientes (COM NOVOS DADOS)
+    // Lista de Pacientes
     const qPacientes = query(collection(db, "users"), where("role", "==", "paciente"));
     onSnapshot(qPacientes, (snap) => {
         const listaPac = document.getElementById('lista-pacientes');
@@ -134,7 +134,6 @@ function inicializarAgenda() {
 
     calendar.render();
 
-    // Sincronização Realtime
     onSnapshot(query(collection(db, "agendamentos")), (snapshot) => {
         calendar.removeAllEvents();
         const eventos = snapshot.docs.map(doc => {
@@ -246,7 +245,7 @@ if(formCadastro) {
             const secondaryAuth = getAuth(secondaryApp);
             const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
             
-            // DADOS GERAIS
+            // DADOS BÁSICOS
             const userData = {
                 uid: userCredential.user.uid,
                 nome: document.getElementById('reg-name').value,
@@ -256,19 +255,36 @@ if(formCadastro) {
                 criadoEm: serverTimestamp()
             };
 
-            // DADOS ESPECÍFICOS
+            // DADOS ESPECÍFICOS (PSI)
             if(role === 'psi') {
                 userData.crp = document.getElementById('reg-crp').value;
                 userData.abordagem = document.getElementById('reg-abordagem').value;
-            } else if (role === 'paciente') {
+            } 
+            // DADOS ESPECÍFICOS (PACIENTE - CAMPOS DO PDF)
+            else if (role === 'paciente') {
                 userData.cpf = document.getElementById('reg-cpf').value;
                 userData.rg = document.getElementById('reg-rg').value;
                 userData.nascimento = document.getElementById('reg-nascimento').value;
                 userData.genero = document.getElementById('reg-genero').value;
+                userData.naturalidade = document.getElementById('reg-naturalidade').value;
+                userData.profissao = document.getElementById('reg-profissao').value;
+                userData.escolaridade = document.getElementById('reg-escolaridade').value;
+                userData.nomeSocial = document.getElementById('reg-nome-social').value;
+                
+                // Endereço
+                userData.cep = document.getElementById('reg-cep').value;
                 userData.endereco = document.getElementById('reg-endereco').value;
                 userData.numero = document.getElementById('reg-numero').value;
                 userData.bairro = document.getElementById('reg-bairro').value;
                 userData.cidade = document.getElementById('reg-cidade').value;
+                
+                // Responsável
+                userData.respNome = document.getElementById('reg-resp-nome').value;
+                userData.respParentesco = document.getElementById('reg-resp-parentesco').value;
+                userData.respTel = document.getElementById('reg-resp-tel').value;
+                userData.respCpf = document.getElementById('reg-resp-cpf').value;
+                
+                userData.obs = document.getElementById('reg-obs').value;
             }
 
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
@@ -292,7 +308,7 @@ if(selectRole) {
         if(this.value === 'psi') areaPsi.style.display = 'block';
         if(this.value === 'paciente') areaPac.style.display = 'block';
     });
-    // Inicia mostrando o correto
+    // Inicia mostrando o correto (normalmente paciente está selecionado por padrão)
     selectRole.dispatchEvent(new Event('change'));
 }
 
@@ -312,7 +328,10 @@ window.abrirEditor = async function(uid) {
         document.getElementById('edit-nome').value = d.nome;
         document.getElementById('edit-telefone').value = d.telefone || '';
         
-        // Exibir extras se necessário
+        // Esconde todos extras primeiro
+        document.getElementById('edit-extras-psi').style.display = 'none';
+        document.getElementById('edit-extras-paciente').style.display = 'none';
+
         if(d.role === 'psi') {
             document.getElementById('edit-extras-psi').style.display = 'block';
             document.getElementById('edit-crp').value = d.crp || '';
