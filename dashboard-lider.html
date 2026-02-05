@@ -136,8 +136,7 @@
                                 <th style="text-align:right;">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="lista-pacientes">
-                            </tbody>
+                        <tbody id="lista-pacientes"></tbody>
                     </table>
                 </div>
             </section>
@@ -149,66 +148,98 @@
 
             <section id="sec-cadastro" class="content-section">
                 <h2>Cadastrar Novo Usuário</h2>
-                <div class="card" style="max-width: 800px;">
+                <div class="card" style="max-width: 900px;">
                     <form id="internalRegisterForm">
-                        <div style="margin-bottom: 1rem;">
-                            <label>Tipo de Conta</label>
-                            <select id="reg-role" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
-                                <option value="paciente">Paciente</option>
-                                <option value="psi">Psicólogo</option>
-                                <option value="recep">Recepcionista</option>
+                        <div style="margin-bottom: 1rem; background: #eee; padding: 10px; border-radius: 5px;">
+                            <label><strong>1. Selecione o Tipo de Conta:</strong></label>
+                            <select id="reg-role" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                                <option value="paciente">Paciente (Prontuário)</option>
+                                <option value="psi">Psicólogo (Equipe)</option>
+                                <option value="recep">Recepcionista (Staff)</option>
                             </select>
                         </div>
                         
                         <div class="form-grid">
-                            <div><label>Nome Completo</label><input type="text" id="reg-name" required></div>
-                            <div><label>Email (Login)</label><input type="email" id="reg-email" required></div>
+                            <div><label>Nome Completo *</label><input type="text" id="reg-name" required placeholder="Nome igual ao documento"></div>
+                            <div><label>E-mail (Login) *</label><input type="email" id="reg-email" required placeholder="email@exemplo.com"></div>
                         </div>
 
                         <div class="form-grid">
-                            <div><label>Senha Inicial</label><input type="password" id="reg-pass" required></div>
-                            <div><label>Celular / WhatsApp</label><input type="tel" id="reg-phone"></div>
+                            <div><label>Senha Inicial *</label><input type="password" id="reg-pass" required></div>
+                            <div><label>Celular (WhatsApp) *</label><input type="tel" id="reg-phone" placeholder="(00) 00000-0000"></div>
                         </div>
 
-                        <div id="reg-psi-extras" style="display:none; background:#f0f8ff; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                            <h4 style="margin-bottom:10px; font-size: 0.9rem; color: var(--color-primary);"><i class="fas fa-user-md"></i> Dados Profissionais</h4>
+                        <div id="reg-psi-extras" style="display:none; background:#f0f8ff; padding:15px; border-radius:8px; margin-top: 15px;">
+                            <h4 style="margin-bottom:10px; color: var(--color-primary);"><i class="fas fa-user-md"></i> Dados Profissionais</h4>
                             <div class="form-grid">
                                 <div><label>CRP</label><input type="text" id="reg-crp"></div>
                                 <div><label>Abordagem</label><input type="text" id="reg-abordagem"></div>
                             </div>
                         </div>
 
-                        <div id="reg-paciente-extras" style="display:block; background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
-                            <h4 style="margin-bottom:10px; font-size: 0.9rem; color: #00695c;"><i class="fas fa-id-card"></i> Dados Pessoais</h4>
-                            <div class="form-grid">
-                                <div><label>CPF</label><input type="text" id="reg-cpf" placeholder="000.000.000-00"></div>
-                                <div><label>RG</label><input type="text" id="reg-rg"></div>
-                            </div>
-                            <div class="form-grid">
-                                <div><label>Data de Nascimento</label><input type="date" id="reg-nascimento"></div>
-                                <div>
-                                    <label>Gênero</label>
-                                    <select id="reg-genero" style="width: 100%; padding: 10px;">
-                                        <option value="">Selecione...</option>
-                                        <option value="Masculino">Masculino</option>
-                                        <option value="Feminino">Feminino</option>
-                                        <option value="Outro">Outro</option>
-                                    </select>
+                        <div id="reg-paciente-extras" style="display:block; margin-top: 15px;">
+                            
+                            <div style="background:#e0f2f1; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                                <h4 style="margin-bottom:10px; color: #00695c;"><i class="fas fa-id-card"></i> 1. Informações Pessoais</h4>
+                                <div class="form-grid">
+                                    <div><label>CPF</label><input type="text" id="reg-cpf" placeholder="000.000.000-00"></div>
+                                    <div><label>RG</label><input type="text" id="reg-rg"></div>
+                                    <div><label>Data de Nascimento</label><input type="date" id="reg-nascimento"></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Gênero</label>
+                                        <select id="reg-genero" style="width: 100%; padding: 10px;">
+                                            <option value="">--Selecione--</option>
+                                            <option value="Masculino">Masculino</option>
+                                            <option value="Feminino">Feminino</option>
+                                            <option value="Outro">Outro</option>
+                                        </select>
+                                    </div>
+                                    <div><label>Naturalidade</label><input type="text" id="reg-naturalidade"></div>
+                                    <div><label>Profissão</label><input type="text" id="reg-profissao"></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div><label>Escolaridade</label><input type="text" id="reg-escolaridade"></div>
+                                    <div><label>Nome Social (se houver)</label><input type="text" id="reg-nome-social"></div>
                                 </div>
                             </div>
-                            
-                            <h4 style="margin-top:15px; margin-bottom:10px; font-size: 0.9rem; color: #00695c;"><i class="fas fa-map-marker-alt"></i> Endereço</h4>
-                            <div class="form-grid">
-                                <div><label>Endereço</label><input type="text" id="reg-endereco" placeholder="Rua, Av..."></div>
-                                <div><label>Número</label><input type="text" id="reg-numero"></div>
+
+                            <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                                <h4 style="margin-bottom:10px; color: #e65100;"><i class="fas fa-map-marker-alt"></i> 2. Endereço</h4>
+                                <div class="form-grid">
+                                    <div><label>CEP</label><input type="text" id="reg-cep"></div>
+                                    <div style="grid-column: span 2;"><label>Endereço</label><input type="text" id="reg-endereco"></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div><label>Número</label><input type="text" id="reg-numero"></div>
+                                    <div><label>Bairro</label><input type="text" id="reg-bairro"></div>
+                                    <div><label>Cidade</label><input type="text" id="reg-cidade"></div>
+                                </div>
                             </div>
-                            <div class="form-grid">
-                                <div><label>Bairro</label><input type="text" id="reg-bairro"></div>
-                                <div><label>Cidade</label><input type="text" id="reg-cidade"></div>
+
+                            <div style="background:#f3e5f5; padding:15px; border-radius:8px; margin-bottom: 15px;">
+                                <h4 style="margin-bottom:10px; color: #6a1b9a;"><i class="fas fa-user-shield"></i> 3. Responsável / Emergência</h4>
+                                <div class="form-grid">
+                                    <div style="grid-column: span 2;"><label>Nome do Responsável/Parente</label><input type="text" id="reg-resp-nome"></div>
+                                    <div><label>Parentesco</label><input type="text" id="reg-resp-parentesco"></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div><label>Telefone/Celular do Responsável</label><input type="text" id="reg-resp-tel"></div>
+                                    <div><label>CPF do Responsável</label><input type="text" id="reg-resp-cpf"></div>
+                                </div>
                             </div>
+
+                            <div>
+                                <label>Observações Gerais</label>
+                                <textarea id="reg-obs" rows="3" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;"></textarea>
+                            </div>
+
                         </div>
 
-                        <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%;">Salvar Cadastro</button>
+                        <button type="submit" class="btn-primary" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 1.1rem;">
+                            <i class="fas fa-save"></i> Salvar Cadastro Completo
+                        </button>
                         <p id="reg-error-msg" style="color: red; font-size: 0.9rem; margin-top: 10px; display: none;"></p>
                     </form>
                 </div>
@@ -238,7 +269,7 @@
                 </div>
                 <div id="edit-extras-paciente" style="display: none; margin-top:10px;">
                     <div><label>CPF</label><input type="text" id="edit-cpf" style="width:100%"></div>
-                </div>
+                    </div>
                 <div style="margin-top: 20px; text-align: right;">
                     <button type="submit" class="btn-primary">Salvar</button>
                 </div>
