@@ -8,12 +8,12 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.2.0/firebase
 // Configuração do Seu Projeto (Pegue esses dados no Console do Firebase)
 // Vá em: Configurações do Projeto (engrenagem) -> Geral -> Seus aplicativos
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "bs-psicologia.firebaseapp.com",
-  projectId: "bs-psicologia",
-  storageBucket: "bs-psicologia.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyBfkNPw45yN4wNFkOWdqHoEnFZZR-U1H5c",
+  authDomain: "psico-base.firebaseapp.com",
+  projectId: "psico-base",
+  storageBucket: "psico-base.firebasestorage.app",
+  messagingSenderId: "868774993208",
+  appId: "1:868774993208:web:83d2c9960f1a92b03eb5cd"
 };
 
 // Inicializa o app do Firebase
