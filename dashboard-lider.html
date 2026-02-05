@@ -59,27 +59,50 @@
                 </div>
             </section>
 
-            <section id="sec-equipe" class="content-section">
+           <section id="sec-equipe" class="content-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Gerenciamento de Equipe</h2>
                     <button class="btn-secondary" onclick="mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[3])">
-                        + Adicionar Novo
+                        + Adicionar Novo Membro
                     </button>
                 </div>
 
-                <h4 style="margin-top: 20px;">Psicólogos</h4>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Status</th>
-                            <th>Nome</th>
-                            <th>CRP</th>
-                            <th>Abordagem</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-psi">
-                        </tbody>
-                </table>
+                <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 30px;">
+                    <div style="background: var(--color-primary); color: white; padding: 15px; font-weight: bold;">
+                        <i class="fas fa-user-md"></i> Psicólogos
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Nome</th>
+                                <th>CRP</th>
+                                <th>Abordagem</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-psi">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div style="background: #546E7A; color: white; padding: 15px; font-weight: bold;">
+                        <i class="fas fa-concierge-bell"></i> Recepção & Staff
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Nome</th>
+                                <th>Email/Contato</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-recep">
+                            </tbody>
+                    </table>
+                </div>
             </section>
 
             <section id="sec-salas" class="content-section">
