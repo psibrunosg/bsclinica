@@ -40,41 +40,99 @@ window.mostrarSecao = function(idSecao, elementoMenu) {
 }
 
 // --- 3. Carregar Equipe (Realtime) ---
+// --- IMPORTANTE: Adicione 'deleteDoc' na primeira linha de imports do arquivo ---
+import { collection, query, where, onSnapshot, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+
+
+// --- 3. Carregar Equipe (Psicólogos e Recepcionistas) ---
 function carregarEquipe() {
+    // A) LISTAR PSICÓLOGOS
     const listaPsi = document.getElementById('lista-psi');
-    if(!listaPsi) return;
-
-    // Busca Psis
-    const q = query(collection(db, "users"), where("role", "==", "psi"));
-    
-    onSnapshot(q, (querySnapshot) => {
-        listaPsi.innerHTML = ""; 
-        let totalPsi = 0;
-
-        querySnapshot.forEach((doc) => {
-            totalPsi++;
-            const data = doc.data();
-            
-            // Simulação de status
-            const isOnline = Math.random() > 0.5; 
-            const statusHtml = isOnline 
-                ? `<span class="status-badge status-online"></span> Disponível`
-                : `<span class="status-badge status-busy"></span> Em atendimento`;
-
-            const row = `
-                <tr>
-                    <td>${statusHtml}</td>
-                    <td><strong>${data.nome}</strong></td>
-                    <td>${data.crp || '-'}</td>
-                    <td>${data.abordagem || '-'}</td>
-                </tr>
-            `;
-            listaPsi.innerHTML += row;
-        });
+    if (listaPsi) {
+        const qPsi = query(collection(db, "users"), where("role", "==", "psi"));
         
-        const contador = document.getElementById('count-psi');
-        if(contador) contador.innerText = totalPsi;
-    });
+        onSnapshot(qPsi, (snapshot) => {
+            listaPsi.innerHTML = "";
+            
+            if(snapshot.empty){
+                listaPsi.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">Nenhum psicólogo cadastrado.</td></tr>`;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                // Status simulado (depois virá da agenda)
+                const isOnline = Math.random() > 0.3; 
+                const statusHtml = isOnline 
+                    ? `<span class="status-badge status-online"></span> <small>Disponível</small>`
+                    : `<span class="status-badge status-busy"></span> <small>Em atendimento</small>`;
+
+                const row = `
+                    <tr>
+                        <td>${statusHtml}</td>
+                        <td style="font-weight: 600; color: var(--color-primary);">${data.nome}</td>
+                        <td>${data.crp || '-'}</td>
+                        <td>${data.abordagem || '-'}</td>
+                        <td style="text-align: right;">
+                            <button onclick="excluirUsuario('${doc.id}', '${data.nome}')" style="background:none; border:none; color:#e74c3c; cursor:pointer;" title="Excluir">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                listaPsi.innerHTML += row;
+            });
+            
+            // Atualiza contador do topo
+            const countPsi = document.getElementById('count-psi');
+            if(countPsi) countPsi.innerText = snapshot.size;
+        });
+    }
+
+    // B) LISTAR RECEPCIONISTAS
+    const listaRecep = document.getElementById('lista-recep');
+    if (listaRecep) {
+        const qRecep = query(collection(db, "users"), where("role", "==", "recep"));
+        
+        onSnapshot(qRecep, (snapshot) => {
+            listaRecep.innerHTML = "";
+            
+            if(snapshot.empty){
+                listaRecep.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">Nenhuma recepcionista cadastrada.</td></tr>`;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = `
+                    <tr>
+                        <td><span class="status-badge status-online"></span> <small>Ativo</small></td>
+                        <td style="font-weight: 600;">${data.nome}</td>
+                        <td>${data.email} <br> <small style="color:#888">${data.telefone || ''}</small></td>
+                        <td style="text-align: right;">
+                            <button onclick="excluirUsuario('${doc.id}', '${data.nome}')" style="background:none; border:none; color:#e74c3c; cursor:pointer;">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                listaRecep.innerHTML += row;
+            });
+        });
+    }
+}
+
+// --- Função Extra: Excluir Usuário ---
+// Colocamos no window para o HTML conseguir enxergar
+window.excluirUsuario = async function(uid, nome) {
+    if(confirm(`Tem certeza que deseja remover ${nome} da equipe?\nEssa ação não pode ser desfeita.`)) {
+        try {
+            await deleteDoc(doc(db, "users", uid));
+            // O onSnapshot vai atualizar a tabela sozinho automaticamente!
+            alert("Usuário removido.");
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao excluir: " + error.message);
+        }
+    }
 }
 
 // --- 4. Renderizar Salas ---
