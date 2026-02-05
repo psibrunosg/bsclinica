@@ -66,6 +66,7 @@ function carregarEquipe() {
                     ? `<span class="status-badge status-online"></span> <small>Disponível</small>`
                     : `<span class="status-badge status-busy"></span> <small>Em atendimento</small>`;
 
+                // ... dentro do loop dos Psicólogos
                 const row = `
                     <tr>
                         <td>${statusHtml}</td>
@@ -73,6 +74,9 @@ function carregarEquipe() {
                         <td>${data.crp || '-'}</td>
                         <td>${data.abordagem || '-'}</td>
                         <td style="text-align: right;">
+                            <button onclick="abrirEditor('${doc.id}')" style="background:none; border:none; color:#2980b9; cursor:pointer; margin-right: 10px;" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
                             <button onclick="excluirUsuario('${doc.id}', '${data.nome}')" style="background:none; border:none; color:#e74c3c; cursor:pointer;" title="Excluir">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -102,13 +106,18 @@ function carregarEquipe() {
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                // ... dentro do loop dos Recepcionista
                 const row = `
                     <tr>
-                        <td><span class="status-badge status-online"></span> <small>Ativo</small></td>
-                        <td style="font-weight: 600;">${data.nome}</td>
-                        <td>${data.email} <br> <small style="color:#888">${data.telefone || ''}</small></td>
+                        <td>${statusHtml}</td>
+                        <td style="font-weight: 600; color: var(--color-primary);">${data.nome}</td>
+                        <td>${data.crp || '-'}</td>
+                        <td>${data.abordagem || '-'}</td>
                         <td style="text-align: right;">
-                            <button onclick="excluirUsuario('${doc.id}', '${data.nome}')" style="background:none; border:none; color:#e74c3c; cursor:pointer;">
+                            <button onclick="abrirEditor('${doc.id}')" style="background:none; border:none; color:#2980b9; cursor:pointer; margin-right: 10px;" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="excluirUsuario('${doc.id}', '${data.nome}')" style="background:none; border:none; color:#e74c3c; cursor:pointer;" title="Excluir">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </td>
@@ -272,7 +281,95 @@ if(btnLogout) {
         signOut(auth).then(() => { window.location.href = "index.html"; });
     });
 }
+// --- FUNÇÕES DE EDIÇÃO ---
 
+// 1. Abrir o Modal e Carregar Dados
+window.abrirEditor = async function(uid) {
+    const modal = document.getElementById('modal-editar');
+    const form = document.getElementById('form-editar');
+    
+    // Mostra carregando...
+    modal.style.display = 'flex';
+    
+    try {
+        // Busca os dados atuais do usuário no banco
+        const docRef = doc(db, "users", uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            
+            // Preenche os campos
+            document.getElementById('edit-uid').value = uid;
+            document.getElementById('edit-role').value = data.role;
+            document.getElementById('edit-nome').value = data.nome;
+            document.getElementById('edit-telefone').value = data.telefone || '';
+            
+            // Se for Psi, mostra e preenche campos extras
+            const areaPsi = document.getElementById('edit-extras-psi');
+            if (data.role === 'psi') {
+                areaPsi.style.display = 'block';
+                document.getElementById('edit-crp').value = data.crp || '';
+                document.getElementById('edit-abordagem').value = data.abordagem || '';
+            } else {
+                areaPsi.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao abrir editor:", error);
+        alert("Erro ao carregar dados do usuário.");
+        fecharModal();
+    }
+}
+
+// 2. Fechar Modal
+window.fecharModal = function() {
+    document.getElementById('modal-editar').style.display = 'none';
+}
+
+// 3. Salvar Edição
+const formEditar = document.getElementById('form-editar');
+if(formEditar) {
+    formEditar.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = formEditar.querySelector('button[type="submit"]');
+        const txtOriginal = btn.innerText;
+        btn.innerText = "Salvando...";
+        btn.disabled = true;
+
+        const uid = document.getElementById('edit-uid').value;
+        const role = document.getElementById('edit-role').value;
+        
+        // Objeto com os dados básicos
+        const dadosAtualizados = {
+            nome: document.getElementById('edit-nome').value,
+            telefone: document.getElementById('edit-telefone').value
+        };
+
+        // Se for Psi, adiciona os extras
+        if (role === 'psi') {
+            dadosAtualizados.crp = document.getElementById('edit-crp').value;
+            dadosAtualizados.abordagem = document.getElementById('edit-abordagem').value;
+        }
+
+        try {
+            // Atualiza no Firestore
+            const docRef = doc(db, "users", uid);
+            await updateDoc(docRef, dadosAtualizados);
+            
+            alert("Dados atualizados com sucesso!");
+            fecharModal();
+            
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            alert("Erro ao salvar: " + error.message);
+        } finally {
+            btn.innerText = txtOriginal;
+            btn.disabled = false;
+        }
+    });
+}
 // Start
 document.addEventListener("DOMContentLoaded", () => {
     carregarEquipe();
