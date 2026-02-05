@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Líder - BS Psicologia</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-brain"></i> BS Admin
+            </div>
+            
+            <div class="nav-item active" onclick="mostrarSecao('sec-home', this)">
+                <i class="fas fa-chart-pie"></i> Visão Geral
+            </div>
+            <div class="nav-item" onclick="mostrarSecao('sec-equipe', this)">
+                <i class="fas fa-user-md"></i> Equipe Ativa
+            </div>
+            <div class="nav-item" onclick="mostrarSecao('sec-salas', this)">
+                <i class="fas fa-door-open"></i> Agenda & Salas
+            </div>
+            <div class="nav-item" onclick="mostrarSecao('sec-cadastro', this)">
+                <i class="fas fa-user-plus"></i> Novo Cadastro
+            </div>
+            
+            <div style="margin-top: auto;">
+                <div class="nav-item" id="btnLogout" style="cursor:pointer; background-color: rgba(231, 76, 60, 0.2);">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            
+            <section id="sec-home" class="content-section active">
+                <h2>Olá, <span id="adminName">...</span>!</h2>
+                <p>Aqui está o resumo da clínica hoje.</p>
+                
+                <div class="form-grid" style="margin-top: 20px;">
+                    <div class="card text-center">
+                        <h3><i class="fas fa-user-md"></i> Psicólogos</h3>
+                        <h1 id="count-psi">-</h1>
+                    </div>
+                    <div class="card text-center">
+                        <h3><i class="fas fa-users"></i> Pacientes</h3>
+                        <h1 id="count-pacientes">0</h1>
+                    </div>
+                    <div class="card text-center">
+                        <h3><i class="fas fa-door-open"></i> Salas Ocupadas</h3>
+                        <h1 id="count-salas">-</h1>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-equipe" class="content-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Gerenciamento de Equipe</h2>
+                    <button class="btn-secondary" onclick="mostrarSecao('sec-cadastro', document.querySelectorAll('.nav-item')[3])">
+                        + Adicionar Novo
+                    </button>
+                </div>
+
+                <h4 style="margin-top: 20px;">Psicólogos</h4>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Nome</th>
+                            <th>CRP</th>
+                            <th>Abordagem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-psi">
+                        </tbody>
+                </table>
+            </section>
+
+            <section id="sec-salas" class="content-section">
+                <h2>Gerenciamento de Salas</h2>
+                <p>Monitoramento em tempo real dos atendimentos.</p>
+                <div class="room-grid" id="grid-salas">
+                    </div>
+            </section>
+
+            <section id="sec-cadastro" class="content-section">
+                <h2>Cadastrar Novo Usuário</h2>
+                <div class="card" style="max-width: 800px;">
+                    <form id="internalRegisterForm">
+                        <div style="margin-bottom: 1rem;">
+                            <label>Tipo de Conta</label>
+                            <select id="reg-role" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                                <option value="psi">Psicólogo</option>
+                                <option value="recep">Recepcionista</option>
+                                <option value="paciente">Paciente</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div><label>Nome</label><input type="text" id="reg-name" required></div>
+                            <div><label>Email</label><input type="email" id="reg-email" required></div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div><label>Senha</label><input type="password" id="reg-pass" required></div>
+                            <div><label>Telefone</label><input type="tel" id="reg-phone"></div>
+                        </div>
+
+                        <div id="reg-psi-extras" style="background:#f0f8ff; padding:15px; border-radius:8px; display:block; margin-bottom: 15px;">
+                            <h4 style="margin-bottom:10px; font-size: 0.9rem;">Dados Profissionais</h4>
+                            <div class="form-grid">
+                                <div><label>CRP</label><input type="text" id="reg-crp"></div>
+                                <div><label>Abordagem</label><input type="text" id="reg-abordagem"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="margin-top: 15px; width: 100%;">Salvar Cadastro</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module" src="./assets/js/dashboard.js"></script>
+</body>
+</html>
